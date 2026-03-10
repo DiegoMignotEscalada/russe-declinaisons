@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Русский — Déclinaisons</title>
+<meta name="theme-color" content="#0e0e12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Русский">
+<link rel="manifest" href="data:application/json,{
+  %22name%22:%22%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9%20%E2%80%94%20D%C3%A9clinaisons%22,
+  %22short_name%22:%22%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9%22,
+  %22start_url%22:%22.%22,
+  %22display%22:%22standalone%22,
+  %22background_color%22:%22%230e0e12%22,
+  %22theme_color%22:%22%230e0e12%22,
+  %22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230e0e12'/%3E%3Ctext y='.9em' font-size='90' x='5'%3E%D0%A0%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22any%22,%22type%22:%22image/svg+xml%22}]
+}">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;1,300&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0e0e12;--surface:#16161e;--card:#1e1e2a;--border:#2a2a3a;--gold:#c9a84c;--gold-light:#e8c97a;--red:#e05c5c;--green:#5cb87a;--blue:#5c9be0;--purple:#9b7fe0;--text:#e8e4d9;--text-dim:#8a8578;--text-muted:#4a4840;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Spectral',Georgia,serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;}
+  .header{width:100%;background:var(--surface);border-bottom:1px solid var(--border);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+  .header-title{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold);letter-spacing:3px;text-transform:uppercase;}
+  .score-badge{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);background:var(--card);border:1px solid var(--border);padding:3px 10px;border-radius:20px;}
+  .score-badge span{color:var(--gold);font-weight:700;}
+  .main{width:100%;max-width:480px;padding:18px 15px 60px;flex:1;}
+  .progress-bar{height:3px;background:var(--border);border-radius:2px;margin-bottom:20px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:2px;transition:width 0.5s ease;}
+  .ex-type{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);padding:3px 9px;border-radius:3px;margin-bottom:14px;}
+  .ex-type.adj{color:var(--purple);background:rgba(155,127,224,0.1);border-color:rgba(155,127,224,0.3);}
+  .ex-type.review{color:var(--red);background:rgba(224,92,92,0.1);border-color:rgba(224,92,92,0.3);}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 18px;margin-bottom:14px;animation:slideIn 0.3s ease;}
+  @keyframes slideIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  .word-display{font-size:36px;font-weight:300;color:var(--gold-light);letter-spacing:2px;margin-bottom:5px;line-height:1.1;}
+  .word-display.adj-display{color:var(--purple);font-size:26px;}
+  .word-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-bottom:3px;}
+  .word-translation{font-style:italic;color:var(--text-dim);font-size:14px;margin-bottom:14px;}
+  .question{font-size:15px;color:var(--text);line-height:1.5;}
+  .question strong{color:var(--gold-light);font-weight:600;}
+  .question strong.adj{color:var(--purple);}
+  .num-badge{display:inline-block;background:rgba(201,168,76,0.15);color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 6px;border-radius:3px;margin-left:4px;}
+  .num-badge.adj{background:rgba(155,127,224,0.15);color:var(--purple);}
+  .options{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .option-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:12px 15px;color:var(--text);font-family:'Spectral',serif;font-size:16px;cursor:pointer;text-align:left;transition:all 0.15s ease;display:flex;align-items:center;gap:9px;}
+  .option-btn:hover:not(:disabled){border-color:var(--gold);background:rgba(201,168,76,0.05);}
+  .option-btn .opt-letter{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);min-width:15px;}
+  .option-btn.correct{border-color:var(--green);background:rgba(92,184,122,0.1);color:var(--green);}
+  .option-btn.wrong{border-color:var(--red);background:rgba(224,92,92,0.1);color:var(--red);}
+  .option-btn.reveal{border-color:var(--green);background:rgba(92,184,122,0.05);}
+  .option-btn:disabled{cursor:default;}
+  .checkbox-options{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .checkbox-option{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:11px 15px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:9px;transition:all 0.15s ease;user-select:none;}
+  .checkbox-option:hover{border-color:var(--gold);}
+  .checkbox-option.selected{border-color:var(--blue);background:rgba(92,155,224,0.1);}
+  .checkbox-option.correct{border-color:var(--green);background:rgba(92,184,122,0.1);color:var(--green);}
+  .checkbox-option.wrong{border-color:var(--red);background:rgba(224,92,92,0.1);color:var(--red);}
+  .checkbox-option.missed{border-color:var(--gold);background:rgba(201,168,76,0.08);color:var(--gold);}
+  .checkbox-box{width:16px;height:16px;border:1.5px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;}
+  .checkbox-option.selected .checkbox-box{border-color:var(--blue);background:var(--blue);color:#fff;}
+  .checkbox-option.correct .checkbox-box{border-color:var(--green);background:var(--green);color:#fff;}
+  .input-zone{margin-bottom:12px;}
+  .text-input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:12px 13px;color:var(--text);font-family:'Spectral',serif;font-size:19px;outline:none;transition:border-color 0.2s;}
+  .text-input:focus{border-color:var(--gold);}
+  .text-input.correct{border-color:var(--green);background:rgba(92,184,122,0.05);}
+  .text-input.wrong{border-color:var(--red);background:rgba(224,92,92,0.05);}
+  .feedback{border-radius:8px;padding:13px 15px;margin-bottom:14px;font-size:13px;line-height:1.6;animation:fadeIn 0.2s ease;}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  .feedback.correct-fb{background:rgba(92,184,122,0.1);border:1px solid rgba(92,184,122,0.3);}
+  .feedback.wrong-fb{background:rgba(224,92,92,0.1);border:1px solid rgba(224,92,92,0.3);}
+  .feedback-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;margin-bottom:7px;text-transform:uppercase;}
+  .feedback-title.ok{color:var(--green);}.feedback-title.ko{color:var(--red);}
+  .feedback-body{color:var(--text);font-size:12px;margin-bottom:7px;}
+  .feedback-body strong{color:var(--gold-light);}
+  .cas-table{width:100%;border-collapse:collapse;font-size:11px;}
+  .cas-table th{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);text-align:left;padding:4px 5px;border-bottom:1px solid var(--border);letter-spacing:1px;}
+  .cas-table td{padding:5px 5px;border-bottom:1px solid rgba(42,42,58,0.4);font-size:12px;}
+  .cas-table tr.hl td{color:var(--gold-light);background:rgba(201,168,76,0.08);}
+  .cas-table tr.hl-adj td{color:var(--purple);background:rgba(155,127,224,0.08);}
+  .cas-name{color:var(--text-dim);font-size:10px;}
+  .btn-primary{width:100%;background:var(--gold);color:#0e0e12;border:none;border-radius:8px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all 0.15s ease;margin-bottom:8px;}
+  .btn-primary:hover{background:var(--gold-light);transform:translateY(-1px);}
+  .btn-secondary{width:100%;background:transparent;color:var(--text-dim);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all 0.15s ease;margin-bottom:8px;}
+  .btn-secondary:hover{border-color:var(--text-dim);color:var(--text);}
+  .btn-danger{width:100%;background:transparent;color:var(--red);border:1px solid rgba(224,92,92,0.4);border-radius:8px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all 0.15s ease;margin-bottom:8px;}
+  .btn-danger:hover{background:rgba(224,92,92,0.1);}
+
+  /* HOME */
+  .home-screen{padding:14px 0;animation:slideIn 0.4s ease;}
+  .home-title{font-size:30px;font-weight:300;color:var(--gold-light);margin-bottom:3px;letter-spacing:2px;}
+  .home-sub{font-style:italic;color:var(--text-dim);margin-bottom:20px;font-size:13px;}
+
+  /* TABS */
+  .tabs{display:flex;gap:6px;margin-bottom:22px;}
+  .tab{flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;padding:10px;border-radius:8px;border:1.5px solid var(--border);color:var(--text-dim);cursor:pointer;text-align:center;transition:all 0.15s;letter-spacing:1px;}
+  .tab.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,0.08);}
+  .tab.review-tab.active{border-color:var(--red);color:var(--red);background:rgba(224,92,92,0.08);}
+  .tab.stats-tab.active{border-color:var(--blue);color:var(--blue);background:rgba(92,155,224,0.08);}
+  .tab-content{display:none;animation:fadeIn 0.2s ease;}
+  .tab-content.active{display:block;}
+
+  /* FILTERS */
+  .filter-section{margin-bottom:16px;}
+  .filter-title{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:2px;margin-bottom:7px;text-transform:uppercase;}
+  .filter-chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.15s;}
+  .chip.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,0.1);}
+  .chip.active.adj-chip{border-color:var(--purple);color:var(--purple);background:rgba(155,127,224,0.1);}
+  .num-filter{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .num-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:1px;}
+  .num-val{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold);min-width:28px;}
+  input[type=range]{flex:1;accent-color:var(--gold);}
+
+  /* STATS */
+  .stats-section{margin-bottom:20px;}
+  .stats-title{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-bottom:12px;text-transform:uppercase;}
+  .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+  .stat-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;}
+  .stat-num{font-size:26px;font-weight:300;color:var(--gold);font-family:'JetBrains Mono',monospace;}
+  .stat-label{font-size:10px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+  .cas-stat-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .cas-stat-name{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);min-width:100px;}
+  .cas-stat-bar-wrap{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+  .cas-stat-bar{height:100%;border-radius:4px;transition:width 0.6s ease;}
+  .cas-stat-pct{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);min-width:36px;text-align:right;}
+  .error-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+  .error-item{background:var(--card);border:1px solid rgba(224,92,92,0.25);border-radius:8px;padding:10px 13px;display:flex;align-items:center;justify-content:space-between;}
+  .error-word{font-size:18px;color:var(--gold-light);font-weight:300;}
+  .error-meta{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-dim);margin-top:2px;}
+  .error-count{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--red);background:rgba(224,92,92,0.1);padding:2px 8px;border-radius:10px;}
+  .empty-state{text-align:center;padding:30px;color:var(--text-muted);font-style:italic;font-size:14px;}
+
+  /* RESULT */
+  .result-screen{text-align:center;padding:36px 15px;animation:slideIn 0.4s ease;}
+  .result-score{font-size:68px;font-weight:300;color:var(--gold);line-height:1;margin-bottom:5px;}
+  .result-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:3px;margin-bottom:20px;}
+  .result-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+
+  /* TAGS */
+  .tag-irreg{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;color:#e05c5c;border:1px solid rgba(224,92,92,0.4);padding:1px 5px;border-radius:2px;margin-left:5px;vertical-align:middle;}
+  .tag-indecl{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--blue);border:1px solid rgba(92,155,224,0.4);padding:1px 5px;border-radius:2px;margin-left:5px;vertical-align:middle;}
+  .tag-adj{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--purple);border:1px solid rgba(155,127,224,0.4);padding:1px 5px;border-radius:2px;margin-left:5px;vertical-align:middle;}
+  .hidden{display:none!important;}
+
+  /* SMART badge */
+  .smart-badge{display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--red);background:rgba(224,92,92,0.1);border:1px solid rgba(224,92,92,0.3);padding:2px 7px;border-radius:10px;margin-left:6px;}
+
+  /* CHRONO */
+  .chrono-wrap{height:4px;background:var(--border);border-radius:2px;margin-bottom:14px;overflow:hidden;}
+  .chrono-bar{height:100%;border-radius:2px;transition:width 0.1s linear;}
+  .chrono-num{font-family:'JetBrains Mono',monospace;font-size:11px;text-align:right;margin-bottom:4px;}
+
+  /* SRS badge */
+  .srs-badge{display:inline-flex;align-items:center;gap:3px;font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:10px;margin-left:5px;}
+  .srs-new{color:var(--blue);background:rgba(92,155,224,0.1);border:1px solid rgba(92,155,224,0.3);}
+  .srs-learning{color:var(--gold);background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.3);}
+  .srs-review{color:var(--green);background:rgba(92,184,122,0.1);border:1px solid rgba(92,184,122,0.3);}
+  .srs-hard{color:var(--red);background:rgba(224,92,92,0.1);border:1px solid rgba(224,92,92,0.3);}
+
+  /* STREAK */
+  .streak-bar{display:flex;gap:4px;margin-bottom:16px;}
+  .streak-dot{width:8px;height:8px;border-radius:50%;background:var(--border);}
+  .streak-dot.ok{background:var(--green);}
+  .streak-dot.ko{background:var(--red);}
+
+  /* TERMINAISONS TABLE */
+  .term-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:6px;}
+  .term-table th{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);padding:4px 6px;border-bottom:1px solid var(--border);text-align:left;letter-spacing:1px;}
+  .term-table td{padding:5px 6px;border-bottom:1px solid rgba(42,42,58,0.3);font-size:12px;color:var(--text);}
+  .term-table td.cas-col{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);}
+  .term-table td.term{color:var(--gold-light);font-weight:400;}
+  .term-table td.term.soft{color:var(--purple);}
+  .term-table td.term.sib{color:var(--blue);}
+  .term-section{margin-bottom:16px;}
+  .term-section-title{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:2px;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border);}
+</style>
+
+<script>
+// ── SERVICE WORKER (PWA offline) ──────────────────────
+if('serviceWorker' in navigator){
+  const swCode = `
+const CACHE='russe-v7';
+const ASSETS=[self.location.href||'/'];
+self.addEventListener('install',e=>{
+  e.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',e=>{
+  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+});
+self.addEventListener('fetch',e=>{
+  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+    if(res&&res.status===200&&res.type==='basic'){
+      const clone=res.clone();
+      caches.open(CACHE).then(cache=>cache.put(e.request,clone));
+    }
+    return res;
+  })));
+});
+`;
+  const blob=new Blob([swCode],{type:'application/javascript'});
+  const url=URL.createObjectURL(blob);
+  navigator.serviceWorker.register(url).then(()=>{
+    console.log('SW enregistré ✓');
+  }).catch(err=>console.warn('SW non supporté:',err));
+}
+</script>
+</head>
+<body>
+<div class="header">
+  <div class="header-title">Русский · V6</div>
+  <div class="score-badge">✓ <span id="scoreRight">0</span> · ✗ <span id="scoreWrong">0</span></div>
+</div>
+<div class="main">
+
+  <!-- ══ ACCUEIL ══ -->
+  <div id="homeScreen" class="home-screen">
+    <div class="word-meta" style="margin-bottom:3px">ВЕРСИЯ 6.0</div>
+    <div class="home-title">Déclinaisons</div>
+    <div class="home-sub">SRS · Chrono · Terminaisons · Phrases</div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('tabPractice',this)">PRATIQUER</div>
+      <div class="tab review-tab" onclick="switchTab('tabReview',this)">ERREURS <span id="errorCountBadge" style="display:none" class="smart-badge">0</span></div>
+      <div class="tab stats-tab" onclick="switchTab('tabStats',this)">STATS</div>
+      <div class="tab" style="color:var(--purple)" onclick="switchTab('tabTermin',this)">RÈGLES</div>
+      <div class="tab" style="color:var(--blue)" onclick="switchTab('tabInstall',this)">📱</div>
+    </div>
+
+    <!-- TAB: PRATIQUER -->
+    <div id="tabPractice" class="tab-content active">
+      <div class="filter-section">
+        <div class="filter-title">Nombre de questions</div>
+        <div class="num-filter">
+          <span class="num-label">Questions :</span>
+          <input type="range" min="5" max="40" value="20" step="5" id="numQ" oninput="document.getElementById('numQval').textContent=this.value">
+          <span class="num-val" id="numQval">20</span>
+        </div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-title">Mode intelligent</div>
+        <div class="filter-chips">
+          <div class="chip active" id="smartChip" onclick="toggleSmartMode(this)">🧠 Répétition espacée (SRS)</div>
+          <div class="chip" id="chronoChip" onclick="toggleChronoMode(this)">⏱ Mode chrono</div>
+          <div class="chip" id="completionBoostChip" onclick="toggleCompletionBoost(this)">✍️ Plus de complétion</div>
+        </div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-title">Type de mots</div>
+        <div class="filter-chips">
+          <div class="chip active" data-filter="wtype" data-val="nom" onclick="toggleFilter(this)">Noms</div>
+          <div class="chip active adj-chip" data-filter="wtype" data-val="adj" onclick="toggleFilter(this)">Adjectifs</div>
+        </div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-title">Nombre</div>
+        <div class="filter-chips">
+          <div class="chip active" data-filter="nombre" data-val="sg" onclick="toggleFilter(this)">Singulier</div>
+          <div class="chip active" data-filter="nombre" data-val="pl" onclick="toggleFilter(this)">Pluriel</div>
+        </div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-title">Type d'exercices</div>
+        <div class="filter-chips">
+          <div class="chip active" data-filter="ex" data-val="qcm" onclick="toggleFilter(this)">QCM</div>
+          <div class="chip active" data-filter="ex" data-val="completion" onclick="toggleFilter(this)">Complétion</div>
+          <div class="chip active" data-filter="ex" data-val="identification" onclick="toggleFilter(this)">Identifier le cas</div>
+          <div class="chip active" data-filter="ex" data-val="phrase" onclick="toggleFilter(this)">Phrase contexte</div>
+        </div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-title">Genre</div>
+        <div class="filter-chips">
+          <div class="chip active" data-filter="genre" data-val="m" onclick="toggleFilter(this)">Masculin</div>
+          <div class="chip active" data-filter="genre" data-val="f" onclick="toggleFilter(this)">Féminin</div>
+          <div class="chip active" data-filter="genre" data-val="n" onclick="toggleFilter(this)">Neutre</div>
+        </div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-title">Catégorie</div>
+        <div class="filter-chips">
+          <div class="chip active" data-filter="cat" data-val="objet" onclick="toggleFilter(this)">Objets</div>
+          <div class="chip active" data-filter="cat" data-val="personne" onclick="toggleFilter(this)">Personnes</div>
+          <div class="chip active" data-filter="cat" data-val="lieu" onclick="toggleFilter(this)">Lieux</div>
+          <div class="chip active" data-filter="cat" data-val="animal" onclick="toggleFilter(this)">Animaux</div>
+          <div class="chip active" data-filter="cat" data-val="nourriture" onclick="toggleFilter(this)">Nourriture</div>
+          <div class="chip active" data-filter="cat" data-val="nature" onclick="toggleFilter(this)">Nature</div>
+          <div class="chip active" data-filter="cat" data-val="temps" onclick="toggleFilter(this)">Temps</div>
+          <div class="chip active" data-filter="cat" data-val="corps" onclick="toggleFilter(this)">Corps</div>
+          <div class="chip active" data-filter="cat" data-val="maison" onclick="toggleFilter(this)">Maison</div>
+          <div class="chip active" data-filter="cat" data-val="vetement" onclick="toggleFilter(this)">Vêtements</div>
+          <div class="chip active" data-filter="cat" data-val="travail" onclick="toggleFilter(this)">Travail</div>
+          <div class="chip active" data-filter="cat" data-val="voyage" onclick="toggleFilter(this)">Voyage</div>
+          <div class="chip active adj-chip" data-filter="adjcat" data-val="couleur" onclick="toggleFilter(this)">Couleurs</div>
+          <div class="chip active adj-chip" data-filter="adjcat" data-val="taille" onclick="toggleFilter(this)">Taille</div>
+          <div class="chip active adj-chip" data-filter="adjcat" data-val="qualite" onclick="toggleFilter(this)">Qualité</div>
+          <div class="chip active adj-chip" data-filter="adjcat" data-val="possessif" onclick="toggleFilter(this)">Possessifs</div>
+          <div class="chip active adj-chip" data-filter="adjcat" data-val="nationalite" onclick="toggleFilter(this)">Nationalités</div>
+          <div class="chip active adj-chip" data-filter="adjcat" data-val="ordinal" onclick="toggleFilter(this)">Ordinaux</div>
+        </div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-title">Difficulté</div>
+        <div class="filter-chips">
+          <div class="chip active" data-filter="diff" data-val="reg" onclick="toggleFilter(this)">Réguliers</div>
+          <div class="chip active" data-filter="diff" data-val="irreg" onclick="toggleFilter(this)">⚠ Irréguliers</div>
+          <div class="chip active" data-filter="diff" data-val="indecl" onclick="toggleFilter(this)">● Indéclinables</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="startSession(false)">COMMENCER →</button>
+    </div>
+
+    <!-- TAB: ERREURS -->
+    <div id="tabReview" class="tab-content">
+      <div id="reviewContent"></div>
+    </div>
+
+    <!-- TAB: STATS -->
+    <div id="tabStats" class="tab-content">
+      <div id="statsContent"></div>
+    </div>
+
+    <!-- TAB: RÈGLES / TERMINAISONS -->
+    <div id="tabTermin" class="tab-content">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--purple);letter-spacing:2px;margin-bottom:16px">TABLEAU DES TERMINAISONS</div>
+
+      <div class="term-section">
+        <div class="term-section-title">NOMS MASCULINS</div>
+        <table class="term-table">
+          <thead><tr><th>CAS</th><th>DUR (-Ø/-й)</th><th>MOU (-ь/-й)</th></tr></thead>
+          <tbody>
+            <tr><td class="cas-col">NOM sg</td><td class="term">—</td><td class="term soft">—</td></tr>
+            <tr><td class="cas-col">GÉN sg</td><td class="term">-а</td><td class="term soft">-я</td></tr>
+            <tr><td class="cas-col">DAT sg</td><td class="term">-у</td><td class="term soft">-ю</td></tr>
+            <tr><td class="cas-col">ACC sg</td><td class="term">inan=NOM / anim=GÉN</td><td class="term soft">idem</td></tr>
+            <tr><td class="cas-col">INS sg</td><td class="term">-ом</td><td class="term soft">-ем/-ём</td></tr>
+            <tr><td class="cas-col">PRÉP sg</td><td class="term">-е</td><td class="term soft">-е</td></tr>
+            <tr style="border-top:1px solid var(--border)"><td class="cas-col">NOM pl</td><td class="term">-ы / -а*</td><td class="term soft">-и / -я*</td></tr>
+            <tr><td class="cas-col">GÉN pl</td><td class="term">-ов</td><td class="term soft">-ей / -ий</td></tr>
+            <tr><td class="cas-col">DAT pl</td><td class="term">-ам</td><td class="term soft">-ям</td></tr>
+            <tr><td class="cas-col">ACC pl</td><td class="term">inan=NOM / anim=GÉN</td><td class="term soft">idem</td></tr>
+            <tr><td class="cas-col">INS pl</td><td class="term">-ами</td><td class="term soft">-ями</td></tr>
+            <tr><td class="cas-col">PRÉP pl</td><td class="term">-ах</td><td class="term soft">-ях</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:4px">* pl en -а/-я = дом→дома, учитель→учителя</div>
+      </div>
+
+      <div class="term-section">
+        <div class="term-section-title">NOMS FÉMININS</div>
+        <table class="term-table">
+          <thead><tr><th>CAS</th><th>-А/-Я</th><th>-Ь</th></tr></thead>
+          <tbody>
+            <tr><td class="cas-col">NOM sg</td><td class="term">-а / -я</td><td class="term soft">-ь</td></tr>
+            <tr><td class="cas-col">GÉN sg</td><td class="term">-ы / -и</td><td class="term soft">-и</td></tr>
+            <tr><td class="cas-col">DAT sg</td><td class="term">-е</td><td class="term soft">-и</td></tr>
+            <tr><td class="cas-col">ACC sg</td><td class="term">-у / -ю</td><td class="term soft">-ь</td></tr>
+            <tr><td class="cas-col">INS sg</td><td class="term">-ой/-ей</td><td class="term soft">-ью</td></tr>
+            <tr><td class="cas-col">PRÉP sg</td><td class="term">-е</td><td class="term soft">-и</td></tr>
+            <tr style="border-top:1px solid var(--border)"><td class="cas-col">NOM pl</td><td class="term">-ы/-и</td><td class="term soft">-и</td></tr>
+            <tr><td class="cas-col">GÉN pl</td><td class="term">-Ø (zéro!)*</td><td class="term soft">-ей</td></tr>
+            <tr><td class="cas-col">DAT pl</td><td class="term">-ам</td><td class="term soft">-ям</td></tr>
+            <tr><td class="cas-col">INS pl</td><td class="term">-ами</td><td class="term soft">-ями</td></tr>
+            <tr><td class="cas-col">PRÉP pl</td><td class="term">-ах</td><td class="term soft">-ях</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:4px">* gén. pl zéro: книга→книг, школа→школ, страна→стран</div>
+      </div>
+
+      <div class="term-section">
+        <div class="term-section-title">NOMS NEUTRES</div>
+        <table class="term-table">
+          <thead><tr><th>CAS</th><th>-О</th><th>-Е/-ИЕ</th></tr></thead>
+          <tbody>
+            <tr><td class="cas-col">NOM sg</td><td class="term">-о</td><td class="term soft">-е / -ие</td></tr>
+            <tr><td class="cas-col">GÉN sg</td><td class="term">-а</td><td class="term soft">-я / -ия</td></tr>
+            <tr><td class="cas-col">DAT sg</td><td class="term">-у</td><td class="term soft">-ю / -ию</td></tr>
+            <tr><td class="cas-col">ACC sg</td><td class="term">= NOM</td><td class="term soft">= NOM</td></tr>
+            <tr><td class="cas-col">INS sg</td><td class="term">-ом</td><td class="term soft">-ем / -ием</td></tr>
+            <tr><td class="cas-col">PRÉP sg</td><td class="term">-е</td><td class="term soft">-е / <span style="color:var(--red)">-ии !</span></td></tr>
+            <tr style="border-top:1px solid var(--border)"><td class="cas-col">NOM pl</td><td class="term">-а</td><td class="term soft">-я / -ия</td></tr>
+            <tr><td class="cas-col">GÉN pl</td><td class="term">-Ø (zéro)</td><td class="term soft">-ей / -ий</td></tr>
+            <tr><td class="cas-col">DAT pl</td><td class="term">-ам</td><td class="term soft">-ям / -иям</td></tr>
+            <tr><td class="cas-col">INS pl</td><td class="term">-ами</td><td class="term soft">-ями</td></tr>
+            <tr><td class="cas-col">PRÉP pl</td><td class="term">-ах</td><td class="term soft">-ях / -иях</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:10px;color:var(--red);margin-top:4px">⚠ -ие: Prép.sg = -ии (здании, занятии !)</div>
+      </div>
+
+      <div class="term-section">
+        <div class="term-section-title">ADJECTIFS DURS / MOUS</div>
+        <table class="term-table">
+          <thead><tr><th>CAS</th><th>M.DUR</th><th>F.DUR</th><th>N.DUR</th><th>PL.DUR</th></tr></thead>
+          <tbody>
+            <tr><td class="cas-col">NOM</td><td class="term">-ый/-ой</td><td class="term">-ая</td><td class="term">-ое</td><td class="term">-ые</td></tr>
+            <tr><td class="cas-col">GÉN</td><td class="term">-ого</td><td class="term">-ой</td><td class="term">-ого</td><td class="term">-ых</td></tr>
+            <tr><td class="cas-col">DAT</td><td class="term">-ому</td><td class="term">-ой</td><td class="term">-ому</td><td class="term">-ым</td></tr>
+            <tr><td class="cas-col">ACC</td><td class="term">inan/-ого</td><td class="term">-ую</td><td class="term">= NOM</td><td class="term">inan/-ых</td></tr>
+            <tr><td class="cas-col">INS</td><td class="term">-ым</td><td class="term">-ой</td><td class="term">-ым</td><td class="term">-ыми</td></tr>
+            <tr><td class="cas-col">PRÉP</td><td class="term">-ом</td><td class="term">-ой</td><td class="term">-ом</td><td class="term">-ых</td></tr>
+          </tbody>
+        </table>
+        <table class="term-table" style="margin-top:8px">
+          <thead><tr><th>CAS</th><th>M.MOU</th><th>F.MOU</th><th>N.MOU</th><th>PL.MOU</th></tr></thead>
+          <tbody>
+            <tr><td class="cas-col">NOM</td><td class="term soft">-ий</td><td class="term soft">-яя</td><td class="term soft">-ее</td><td class="term soft">-ие</td></tr>
+            <tr><td class="cas-col">GÉN</td><td class="term soft">-его</td><td class="term soft">-ей</td><td class="term soft">-его</td><td class="term soft">-их</td></tr>
+            <tr><td class="cas-col">DAT</td><td class="term soft">-ему</td><td class="term soft">-ей</td><td class="term soft">-ему</td><td class="term soft">-им</td></tr>
+            <tr><td class="cas-col">INS</td><td class="term soft">-им</td><td class="term soft">-ей</td><td class="term soft">-им</td><td class="term soft">-ими</td></tr>
+            <tr><td class="cas-col">PRÉP</td><td class="term soft">-ем</td><td class="term soft">-ей</td><td class="term soft">-ем</td><td class="term soft">-их</td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:4px">Après г/к/х/ж/ш/щ/ч: -ый→-ий, -ые→-ие, -ых→-их</div>
+      </div>
+
+      <div class="term-section">
+        <div class="term-section-title">RÈGLES MNÉMOTECHNIQUES</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="background:var(--card);border-radius:8px;padding:11px 13px;border:1px solid var(--border)">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);margin-bottom:5px">ANIMÉ = GÉNITIF à l'ACC.</div>
+            <div style="font-size:12px;color:var(--text-dim)">Je vois <strong style="color:var(--text)">студента</strong> (pas студент) — l'être vivant "fuit" au génitif</div>
+          </div>
+          <div style="background:var(--card);border-radius:8px;padding:11px 13px;border:1px solid var(--border)">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);margin-bottom:5px">GÉNITIF PLURIEL FÉMININ = ZÉRO</div>
+            <div style="font-size:12px;color:var(--text-dim)">книга→<strong style="color:var(--text)">книг</strong>, школа→<strong style="color:var(--text)">школ</strong> — la terminaison disparaît !</div>
+          </div>
+          <div style="background:var(--card);border-radius:8px;padding:11px 13px;border:1px solid var(--border)">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);margin-bottom:5px">DATIF = DONNER / TÉLÉPHONER</div>
+            <div style="font-size:12px;color:var(--text-dim)">Я дам <strong style="color:var(--text)">другу</strong> / Я звоню <strong style="color:var(--text)">маме</strong> — à QUI ?</div>
+          </div>
+          <div style="background:var(--card);border-radius:8px;padding:11px 13px;border:1px solid var(--border)">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gold);margin-bottom:5px">INSTRUMENTAL = AVEC / PAR MOYEN DE</div>
+            <div style="font-size:12px;color:var(--text-dim)">Я пишу <strong style="color:var(--text)">карандашом</strong> / Я еду <strong style="color:var(--text)">автобусом</strong></div>
+          </div>
+          <div style="background:rgba(224,92,92,0.08);border-radius:8px;padding:11px 13px;border:1px solid rgba(224,92,92,0.25)">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--red);margin-bottom:5px">⚠ PIÈGES FRÉQUENTS</div>
+            <div style="font-size:12px;color:var(--text-dim);line-height:1.7">
+              • -ие au prép. sg = <strong style="color:var(--text)">-ии</strong> (здании !)<br>
+              • мой/твой : гén. sg = <strong style="color:var(--text)">моего</strong> (pas мойого)<br>
+              • время : dat. sg = <strong style="color:var(--text)">времени</strong> (radical -ен-)<br>
+              • человек pl = <strong style="color:var(--text)">люди</strong> (supplétion totale)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: INSTALL -->
+    <div id="tabInstall" class="tab-content">
+      <div id="installContent">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--blue);letter-spacing:2px;margin-bottom:16px">📱 INSTALLER SUR ANDROID</div>
+        <div style="font-size:14px;color:var(--text);line-height:1.7;margin-bottom:20px">
+          Pour avoir l'appli sur ton écran d'accueil et l'utiliser <strong style="color:var(--gold)">hors ligne</strong>, suis ces étapes :
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:6px">ÉTAPE 1 — TÉLÉCHARGE LE FICHIER</div>
+            <div style="font-size:13px;color:var(--text-dim);line-height:1.6">Télécharge le fichier <strong style="color:var(--text)">russe-declinaisons-v7.html</strong> depuis Claude sur ton téléphone Android.</div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:6px">ÉTAPE 2 — OUVRE DANS CHROME</div>
+            <div style="font-size:13px;color:var(--text-dim);line-height:1.6">Va dans <strong style="color:var(--text)">Mes fichiers → Téléchargements</strong>, appuie sur le fichier. Il s'ouvre dans Chrome.</div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:6px">ÉTAPE 3 — MENU CHROME</div>
+            <div style="font-size:13px;color:var(--text-dim);line-height:1.6">Dans Chrome, appuie sur les <strong style="color:var(--text)">3 points ⋮</strong> en haut à droite, puis <strong style="color:var(--text)">"Ajouter à l'écran d'accueil"</strong>.</div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);margin-bottom:6px">ÉTAPE 4 — CONFIRME</div>
+            <div style="font-size:13px;color:var(--text-dim);line-height:1.6">Une fenêtre apparaît. Appuie sur <strong style="color:var(--text)">"Ajouter"</strong>. L'icône apparaît sur ton écran d'accueil !</div>
+          </div>
+          <div style="background:rgba(92,184,122,0.08);border:1px solid rgba(92,184,122,0.3);border-radius:10px;padding:14px 16px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);margin-bottom:6px">✓ HORS LIGNE</div>
+            <div style="font-size:13px;color:var(--text-dim);line-height:1.6">Une fois ouvert une première fois, le fichier est mémorisé. Tu peux l'utiliser <strong style="color:var(--green)">sans internet</strong> en appuyant sur l'icône.</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(92,184,122,0.08);border:1px solid rgba(92,184,122,0.3);border-radius:10px;padding:14px 16px;margin-bottom:20px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);margin-bottom:6px">✓ SAUVEGARDE AUTOMATIQUE</div>
+          <div style="font-size:13px;color:var(--text-dim);line-height:1.6">Tes statistiques, erreurs et progression SRS sont <strong style="color:var(--green)">sauvegardées automatiquement</strong> sur ton appareil. Elles survivent à la fermeture de l'app.</div>
+        </div>
+        <div style="background:rgba(92,155,224,0.08);border:1px solid rgba(92,155,224,0.3);border-radius:10px;padding:14px 16px;margin-bottom:20px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--blue);margin-bottom:6px">📊 DONNÉES SAUVEGARDÉES</div>
+          <div style="font-size:13px;color:var(--text-dim);line-height:1.6">
+            • Stats par cas (nominatif, génitif…)<br>
+            • Liste des mots difficiles<br>
+            • Système SRS (espacement mémorisé)<br>
+            • Préférences (mode intelligent, chrono…)
+          </div>
+        </div>
+        <button class="btn-secondary" onclick="exportData()" style="margin-bottom:8px">📤 Exporter mes données</button>
+        <button class="btn-secondary" onclick="importData()" style="margin-bottom:8px">📥 Importer des données</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ EXERCICE ══ -->
+  <div id="exerciceScreen" class="hidden">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div id="streakBar" class="streak-bar"></div>
+    <div id="chronoWrap" class="hidden">
+      <div class="chrono-num"><span id="chronoNum" style="color:var(--gold)">15</span>s</div>
+      <div class="chrono-wrap"><div class="chrono-bar" id="chronoBar" style="width:100%;background:var(--green)"></div></div>
+    </div>
+    <div style="display:flex;align-items:center;margin-bottom:14px;gap:8px;">
+      <div id="exTypeBadge" class="ex-type">QCM</div>
+      <div id="smartIndicator" class="hidden smart-badge">🔥 difficile</div>
+      <div id="srsBadge" class="hidden srs-badge"></div>
+    </div>
+    <div class="card" id="questionCard"></div>
+    <div id="answersZone"></div>
+    <div id="feedbackZone" class="hidden"></div>
+    <button class="btn-primary hidden" id="nextBtn" onclick="nextQuestion()">SUIVANT →</button>
+    <button class="btn-secondary" onclick="goHome()">↩ Accueil</button>
+  </div>
+
+  <!-- ══ RÉSULTAT ══ -->
+  <div id="resultScreen" class="hidden result-screen">
+    <div class="result-score" id="resultScore">0%</div>
+    <div class="result-label">SCORE FINAL</div>
+    <div class="result-stats-grid">
+      <div class="stat-box"><div class="stat-num" id="statRight">0</div><div class="stat-label">CORRECTES</div></div>
+      <div class="stat-box"><div class="stat-num" id="statWrong">0</div><div class="stat-label">ERREURS</div></div>
+    </div>
+    <div id="resultCasStats" style="margin-bottom:20px;text-align:left;"></div>
+    <div class="result-msg" id="resultMsg" style="margin-bottom:20px;font-size:16px;"></div>
+    <button class="btn-primary" onclick="startSession(false)">REJOUER →</button>
+    <button class="btn-secondary" id="replayErrorsBtn" onclick="startSession(true)" style="display:none">🔁 RÉVISER MES ERREURS</button>
+    <button class="btn-secondary" onclick="goHome()">↩ Accueil</button>
+  </div>
+</div>
+
+<script>
+const CAS=['Nominatif','Génitif','Datif','Accusatif','Instrumental','Prépositionnel'];
+const CAS_SHORT=['NOM','GÉN','DAT','ACC','INS','PRÉP'];
+const CAS_Q=['Кто?/Что?','Кого?/Чего?','Кому?/Чему?','Кого?/Что?','Кем?/Чем?','О ком?/О чём?'];
+
+// ══════════════════════════════════════════════════════════════
+// BASE DE DONNÉES (identique V3)
+// ══════════════════════════════════════════════════════════════
+const NOMS=[
+{ru:'стол',fr:'table',genre:'m',anim:false,cat:'objet',diff:'reg',wtype:'nom',sg:['стол','стола','столу','стол','столом','столе'],pl:['столы','столов','столам','столы','столами','столах'],note:'Masc. inanimé dur. Nom=Acc'},
+{ru:'дом',fr:'maison',genre:'m',anim:false,cat:'lieu',diff:'reg',wtype:'nom',sg:['дом','дома','дому','дом','домом','доме'],pl:['дома','домов','домам','дома','домами','домах'],note:'Pl.nom en -а'},
+{ru:'город',fr:'ville',genre:'m',anim:false,cat:'lieu',diff:'reg',wtype:'nom',sg:['город','города','городу','город','городом','городе'],pl:['города','городов','городам','города','городами','городах'],note:'Pl.nom en -а'},
+{ru:'хлеб',fr:'pain',genre:'m',anim:false,cat:'nourriture',diff:'reg',wtype:'nom',sg:['хлеб','хлеба','хлебу','хлеб','хлебом','хлебе'],pl:['хлебы','хлебов','хлебам','хлебы','хлебами','хлебах'],note:'Masc. inanimé standard'},
+{ru:'нож',fr:'couteau',genre:'m',anim:false,cat:'objet',diff:'reg',wtype:'nom',sg:['нож','ножа','ножу','нож','ножом','ноже'],pl:['ножи','ножей','ножам','ножи','ножами','ножах'],note:'Après ж: pl -и, gén.pl -ей'},
+{ru:'словарь',fr:'dictionnaire',genre:'m',anim:false,cat:'objet',diff:'reg',wtype:'nom',sg:['словарь','словаря','словарю','словарь','словарём','словаре'],pl:['словари','словарей','словарям','словари','словарями','словарях'],note:'Masc. mou -ь'},
+{ru:'рубль',fr:'rouble',genre:'m',anim:false,cat:'objet',diff:'reg',wtype:'nom',sg:['рубль','рубля','рублю','рубль','рублём','рубле'],pl:['рубли','рублей','рублям','рубли','рублями','рублях'],note:'Masc. mou en -ь'},
+{ru:'автобус',fr:'bus',genre:'m',anim:false,cat:'voyage',diff:'reg',wtype:'nom',sg:['автобус','автобуса','автобусу','автобус','автобусом','автобусе'],pl:['автобусы','автобусов','автобусам','автобусы','автобусами','автобусах'],note:'Masc. inanimé standard'},
+{ru:'поезд',fr:'train',genre:'m',anim:false,cat:'voyage',diff:'reg',wtype:'nom',sg:['поезд','поезда','поезду','поезд','поездом','поезде'],pl:['поезда','поездов','поездам','поезда','поездами','поездах'],note:'Pl.nom en -а'},
+{ru:'язык',fr:'langue',genre:'m',anim:false,cat:'objet',diff:'reg',wtype:'nom',sg:['язык','языка','языку','язык','языком','языке'],pl:['языки','языков','языкам','языки','языками','языках'],note:'Après к: pl -и'},
+{ru:'урок',fr:'leçon',genre:'m',anim:false,cat:'travail',diff:'reg',wtype:'nom',sg:['урок','урока','уроку','урок','уроком','уроке'],pl:['уроки','уроков','урокам','уроки','уроками','уроках'],note:'Après к: pl -и'},
+{ru:'магазин',fr:'magasin',genre:'m',anim:false,cat:'lieu',diff:'reg',wtype:'nom',sg:['магазин','магазина','магазину','магазин','магазином','магазине'],pl:['магазины','магазинов','магазинам','магазины','магазинами','магазинах'],note:'Masc. inanimé standard'},
+{ru:'телефон',fr:'téléphone',genre:'m',anim:false,cat:'objet',diff:'reg',wtype:'nom',sg:['телефон','телефона','телефону','телефон','телефоном','телефоне'],pl:['телефоны','телефонов','телефонам','телефоны','телефонами','телефонах'],note:'Masc. inanimé standard'},
+{ru:'стул',fr:'chaise',genre:'m',anim:false,cat:'maison',diff:'irreg',wtype:'nom',sg:['стул','стула','стулу','стул','стулом','стуле'],pl:['стулья','стульев','стульям','стулья','стульями','стульях'],note:'⚠ IRRÉG: pl -ья'},
+{ru:'шкаф',fr:'armoire',genre:'m',anim:false,cat:'maison',diff:'reg',wtype:'nom',sg:['шкаф','шкафа','шкафу','шкаф','шкафом','шкафе'],pl:['шкафы','шкафов','шкафам','шкафы','шкафами','шкафах'],note:'Masc. inanimé standard'},
+{ru:'ключ',fr:'clé',genre:'m',anim:false,cat:'maison',diff:'reg',wtype:'nom',sg:['ключ','ключа','ключу','ключ','ключом','ключе'],pl:['ключи','ключей','ключам','ключи','ключами','ключах'],note:'Après ч: pl -и, gén.pl -ей'},
+{ru:'брат',fr:'frère',genre:'m',anim:true,cat:'personne',diff:'irreg',wtype:'nom',sg:['брат','брата','брату','брата','братом','брате'],pl:['братья','братьев','братьям','братьев','братьями','братьях'],note:'⚠ IRRÉG: pl братья. Animé: Acc=Gén'},
+{ru:'друг',fr:'ami',genre:'m',anim:true,cat:'personne',diff:'irreg',wtype:'nom',sg:['друг','друга','другу','друга','другом','друге'],pl:['друзья','друзей','друзьям','друзей','друзьями','друзьях'],note:'⚠ IRRÉG: pl друзья, г→з'},
+{ru:'сын',fr:'fils',genre:'m',anim:true,cat:'personne',diff:'irreg',wtype:'nom',sg:['сын','сына','сыну','сына','сыном','сыне'],pl:['сыновья','сыновей','сыновьям','сыновей','сыновьями','сыновьях'],note:'⚠ IRRÉG: pl сыновья'},
+{ru:'студент',fr:'étudiant',genre:'m',anim:true,cat:'personne',diff:'reg',wtype:'nom',sg:['студент','студента','студенту','студента','студентом','студенте'],pl:['студенты','студентов','студентам','студентов','студентами','студентах'],note:'Animé masc. régulier'},
+{ru:'учитель',fr:'professeur',genre:'m',anim:true,cat:'travail',diff:'reg',wtype:'nom',sg:['учитель','учителя','учителю','учителя','учителем','учителе'],pl:['учителя','учителей','учителям','учителей','учителями','учителях'],note:'Mou -ь: pl.nom -я'},
+{ru:'врач',fr:'médecin',genre:'m',anim:true,cat:'travail',diff:'reg',wtype:'nom',sg:['врач','врача','врачу','врача','врачом','враче'],pl:['врачи','врачей','врачам','врачей','врачами','врачах'],note:'Après ч: pl -и'},
+{ru:'кот',fr:'chat',genre:'m',anim:true,cat:'animal',diff:'reg',wtype:'nom',sg:['кот','кота','коту','кота','котом','коте'],pl:['коты','котов','котам','котов','котами','котах'],note:'Animé: Acc=Gén'},
+{ru:'волк',fr:'loup',genre:'m',anim:true,cat:'animal',diff:'reg',wtype:'nom',sg:['волк','волка','волку','волка','волком','волке'],pl:['волки','волков','волкам','волков','волками','волках'],note:'Après к: pl -и'},
+{ru:'человек',fr:'personne',genre:'m',anim:true,cat:'personne',diff:'irreg',wtype:'nom',sg:['человек','человека','человеку','человека','человеком','человеке'],pl:['люди','людей','людям','людей','людьми','людях'],note:'⚠ IRRÉG: pl люди (supplétion!)'},
+{ru:'ребёнок',fr:'enfant',genre:'m',anim:true,cat:'personne',diff:'irreg',wtype:'nom',sg:['ребёнок','ребёнка','ребёнку','ребёнка','ребёнком','ребёнке'],pl:['дети','детей','детям','детей','детьми','детях'],note:'⚠ IRRÉG: pl дети (supplétion!)'},
+{ru:'книга',fr:'livre',genre:'f',anim:false,cat:'objet',diff:'reg',wtype:'nom',sg:['книга','книги','книге','книгу','книгой','книге'],pl:['книги','книг','книгам','книги','книгами','книгах'],note:'⚠ Gén.pl zéro (книг)'},
+{ru:'школа',fr:'école',genre:'f',anim:false,cat:'lieu',diff:'reg',wtype:'nom',sg:['школа','школы','школе','школу','школой','школе'],pl:['школы','школ','школам','школы','школами','школах'],note:'Gén.pl zéro (школ)'},
+{ru:'страна',fr:'pays',genre:'f',anim:false,cat:'lieu',diff:'reg',wtype:'nom',sg:['страна','страны','стране','страну','страной','стране'],pl:['страны','стран','странам','страны','странами','странах'],note:'Gén.pl zéro (стран)'},
+{ru:'улица',fr:'rue',genre:'f',anim:false,cat:'lieu',diff:'reg',wtype:'nom',sg:['улица','улицы','улице','улицу','улицей','улице'],pl:['улицы','улиц','улицам','улицы','улицами','улицах'],note:'Gén.pl zéro (улиц)'},
+{ru:'рука',fr:'main',genre:'f',anim:false,cat:'corps',diff:'reg',wtype:'nom',sg:['рука','руки','руке','руку','рукой','руке'],pl:['руки','рук','рукам','руки','руками','руках'],note:'Gén.pl zéro (рук)'},
+{ru:'нога',fr:'jambe',genre:'f',anim:false,cat:'corps',diff:'reg',wtype:'nom',sg:['нога','ноги','ноге','ногу','ногой','ноге'],pl:['ноги','ног','ногам','ноги','ногами','ногах'],note:'Gén.pl zéro (ног)'},
+{ru:'женщина',fr:'femme',genre:'f',anim:true,cat:'personne',diff:'reg',wtype:'nom',sg:['женщина','женщины','женщине','женщину','женщиной','женщине'],pl:['женщины','женщин','женщинам','женщин','женщинами','женщинах'],note:'Animé fém. Gén.pl zéro'},
+{ru:'кошка',fr:'chatte',genre:'f',anim:true,cat:'animal',diff:'reg',wtype:'nom',sg:['кошка','кошки','кошке','кошку','кошкой','кошке'],pl:['кошки','кошек','кошкам','кошек','кошками','кошках'],note:'⚠ Gén.pl voyelle mobile: кошек'},
+{ru:'собака',fr:'chien',genre:'f',anim:true,cat:'animal',diff:'reg',wtype:'nom',sg:['собака','собаки','собаке','собаку','собакой','собаке'],pl:['собаки','собак','собакам','собак','собаками','собаках'],note:'Gén.pl zéro (собак)'},
+{ru:'вода',fr:'eau',genre:'f',anim:false,cat:'nourriture',diff:'reg',wtype:'nom',sg:['вода','воды','воде','воду','водой','воде'],pl:['воды','вод','водам','воды','водами','водах'],note:'Gén.pl zéro (вод)'},
+{ru:'семья',fr:'famille',genre:'f',anim:false,cat:'personne',diff:'reg',wtype:'nom',sg:['семья','семьи','семье','семью','семьёй','семье'],pl:['семьи','семей','семьям','семьи','семьями','семьях'],note:'Fém. -ья. Gén.pl: семей'},
+{ru:'неделя',fr:'semaine',genre:'f',anim:false,cat:'temps',diff:'reg',wtype:'nom',sg:['неделя','недели','неделе','неделю','неделей','неделе'],pl:['недели','недель','неделям','недели','неделями','неделях'],note:'Fém. mou -я'},
+{ru:'кухня',fr:'cuisine',genre:'f',anim:false,cat:'maison',diff:'reg',wtype:'nom',sg:['кухня','кухни','кухне','кухню','кухней','кухне'],pl:['кухни','кухонь','кухням','кухни','кухнями','кухнях'],note:'Gén.pl voyelle mobile: кухонь'},
+{ru:'куртка',fr:'veste',genre:'f',anim:false,cat:'vetement',diff:'reg',wtype:'nom',sg:['куртка','куртки','куртке','куртку','курткой','куртке'],pl:['куртки','курток','курткам','куртки','куртками','куртках'],note:'Gén.pl voyelle mobile: курток'},
+{ru:'кровать',fr:'lit',genre:'f',anim:false,cat:'maison',diff:'reg',wtype:'nom',sg:['кровать','кровати','кровати','кровать','кроватью','кровати'],pl:['кровати','кроватей','кроватям','кровати','кроватями','кроватях'],note:'Fém. en -ь'},
+{ru:'мать',fr:'mère',genre:'f',anim:true,cat:'personne',diff:'irreg',wtype:'nom',sg:['мать','матери','матери','мать','матерью','матери'],pl:['матери','матерей','матерям','матерей','матерями','матерях'],note:'⚠ IRRÉG: radical матер-'},
+{ru:'дочь',fr:'fille',genre:'f',anim:true,cat:'personne',diff:'irreg',wtype:'nom',sg:['дочь','дочери','дочери','дочь','дочерью','дочери'],pl:['дочери','дочерей','дочерям','дочерей','дочерями','дочерях'],note:'⚠ IRRÉG: même modèle que мать'},
+{ru:'ночь',fr:'nuit',genre:'f',anim:false,cat:'temps',diff:'reg',wtype:'nom',sg:['ночь','ночи','ночи','ночь','ночью','ночи'],pl:['ночи','ночей','ночам','ночи','ночами','ночах'],note:'Fém. -ь: Ins.sg -ью'},
+{ru:'дверь',fr:'porte',genre:'f',anim:false,cat:'maison',diff:'reg',wtype:'nom',sg:['дверь','двери','двери','дверь','дверью','двери'],pl:['двери','дверей','дверям','двери','дверями','дверях'],note:'Fém. en -ь'},
+{ru:'жизнь',fr:'vie',genre:'f',anim:false,cat:'objet',diff:'reg',wtype:'nom',sg:['жизнь','жизни','жизни','жизнь','жизнью','жизни'],pl:['жизни','жизней','жизням','жизни','жизнями','жизнях'],note:'Fém. en -ь'},
+{ru:'окно',fr:'fenêtre',genre:'n',anim:false,cat:'maison',diff:'reg',wtype:'nom',sg:['окно','окна','окну','окно','окном','окне'],pl:['окна','окон','окнам','окна','окнами','окнах'],note:'Gén.pl voyelle mobile: окон'},
+{ru:'слово',fr:'mot',genre:'n',anim:false,cat:'objet',diff:'reg',wtype:'nom',sg:['слово','слова','слову','слово','словом','слове'],pl:['слова','слов','словам','слова','словами','словах'],note:'Gén.pl zéro (слов)'},
+{ru:'место',fr:'endroit',genre:'n',anim:false,cat:'lieu',diff:'reg',wtype:'nom',sg:['место','места','месту','место','местом','месте'],pl:['места','мест','местам','места','местами','местах'],note:'Gén.pl zéro (мест)'},
+{ru:'письмо',fr:'lettre',genre:'n',anim:false,cat:'objet',diff:'reg',wtype:'nom',sg:['письмо','письма','письму','письмо','письмом','письме'],pl:['письма','писем','письмам','письма','письмами','письмах'],note:'Gén.pl voyelle mobile: писем'},
+{ru:'яблоко',fr:'pomme',genre:'n',anim:false,cat:'nourriture',diff:'reg',wtype:'nom',sg:['яблоко','яблока','яблоку','яблоко','яблоком','яблоке'],pl:['яблоки','яблок','яблокам','яблоки','яблоками','яблоках'],note:'Pl.nom -и (яблоки)'},
+{ru:'дерево',fr:'arbre',genre:'n',anim:false,cat:'nature',diff:'irreg',wtype:'nom',sg:['дерево','дерева','дереву','дерево','деревом','дереве'],pl:['деревья','деревьев','деревьям','деревья','деревьями','деревьях'],note:'⚠ IRRÉG: pl деревья'},
+{ru:'море',fr:'mer',genre:'n',anim:false,cat:'nature',diff:'reg',wtype:'nom',sg:['море','моря','морю','море','морем','море'],pl:['моря','морей','морям','моря','морями','морях'],note:'Neutre mou -е'},
+{ru:'здание',fr:'bâtiment',genre:'n',anim:false,cat:'lieu',diff:'reg',wtype:'nom',sg:['здание','здания','зданию','здание','зданием','здании'],pl:['здания','зданий','зданиям','здания','зданиями','зданиях'],note:'⚠ Neutre -ие: Prép.sg -ии!'},
+{ru:'занятие',fr:'cours',genre:'n',anim:false,cat:'travail',diff:'reg',wtype:'nom',sg:['занятие','занятия','занятию','занятие','занятием','занятии'],pl:['занятия','занятий','занятиям','занятия','занятиями','занятиях'],note:'Neutre -ие'},
+{ru:'время',fr:'temps',genre:'n',anim:false,cat:'temps',diff:'irreg',wtype:'nom',sg:['время','времени','времени','время','временем','времени'],pl:['времена','времён','временам','времена','временами','временах'],note:'⚠ IRRÉG: radical врем-ен-'},
+{ru:'имя',fr:'prénom',genre:'n',anim:false,cat:'personne',diff:'irreg',wtype:'nom',sg:['имя','имени','имени','имя','именем','имени'],pl:['имена','имён','именам','имена','именами','именах'],note:'⚠ IRRÉG: neutre en -мя'},
+{ru:'путь',fr:'chemin',genre:'m',anim:false,cat:'lieu',diff:'irreg',wtype:'nom',sg:['путь','пути','пути','путь','путём','пути'],pl:['пути','путей','путям','пути','путями','путях'],note:'⚠ IRRÉG: seul masc. décliné comme fém.'},
+{ru:'год',fr:'année',genre:'m',anim:false,cat:'temps',diff:'irreg',wtype:'nom',sg:['год','года','году','год','годом','году'],pl:['годы','лет','годам','годы','годами','годах'],note:'⚠ IRRÉG: Gén.pl = лет (supplétion!)'},
+{ru:'день',fr:'jour',genre:'m',anim:false,cat:'temps',diff:'reg',wtype:'nom',sg:['день','дня','дню','день','днём','дне'],pl:['дни','дней','дням','дни','днями','днях'],note:'Masc. mou -ь'},
+{ru:'час',fr:'heure',genre:'m',anim:false,cat:'temps',diff:'reg',wtype:'nom',sg:['час','часа','часу','час','часом','часе'],pl:['часы','часов','часам','часы','часами','часах'],note:'Masc. inanimé standard'},
+{ru:'вечер',fr:'soir',genre:'m',anim:false,cat:'temps',diff:'reg',wtype:'nom',sg:['вечер','вечера','вечеру','вечер','вечером','вечере'],pl:['вечера','вечеров','вечерам','вечера','вечерами','вечерах'],note:'Pl.nom en -а'},
+{ru:'зима',fr:'hiver',genre:'f',anim:false,cat:'temps',diff:'reg',wtype:'nom',sg:['зима','зимы','зиме','зиму','зимой','зиме'],pl:['зимы','зим','зимам','зимы','зимами','зимах'],note:'Gén.pl zéro (зим)'},
+{ru:'река',fr:'rivière',genre:'f',anim:false,cat:'nature',diff:'reg',wtype:'nom',sg:['река','реки','реке','реку','рекой','реке'],pl:['реки','рек','рекам','реки','реками','реках'],note:'Gén.pl zéro (рек)'},
+{ru:'лес',fr:'forêt',genre:'m',anim:false,cat:'nature',diff:'reg',wtype:'nom',sg:['лес','леса','лесу','лес','лесом','лесе'],pl:['леса','лесов','лесам','леса','лесами','лесах'],note:'Pl.nom en -а'},
+{ru:'кофе',fr:'café',genre:'m',anim:false,cat:'nourriture',diff:'indecl',wtype:'nom',sg:['кофе','кофе','кофе','кофе','кофе','кофе'],pl:['кофе','кофе','кофе','кофе','кофе','кофе'],note:'● INDÉCLINABLE'},
+{ru:'такси',fr:'taxi',genre:'n',anim:false,cat:'voyage',diff:'indecl',wtype:'nom',sg:['такси','такси','такси','такси','такси','такси'],pl:['такси','такси','такси','такси','такси','такси'],note:'● INDÉCLINABLE'},
+{ru:'метро',fr:'métro',genre:'n',anim:false,cat:'voyage',diff:'indecl',wtype:'nom',sg:['метро','метро','метро','метро','метро','метро'],pl:['метро','метро','метро','метро','метро','метро'],note:'● INDÉCLINABLE'},
+// ADJECTIFS
+{ru:'красный',fr:'rouge',wtype:'adj',adjcat:'couleur',diff:'reg',sg_m:['красный','красного','красному','красного','красным','красном'],sg_f:['красная','красной','красной','красную','красной','красной'],sg_n:['красное','красного','красному','красное','красным','красном'],pl:['красные','красных','красным','красных','красными','красных'],note:'Adj. dur -ый'},
+{ru:'синий',fr:'bleu foncé',wtype:'adj',adjcat:'couleur',diff:'reg',sg_m:['синий','синего','синему','синего','синим','синем'],sg_f:['синяя','синей','синей','синюю','синей','синей'],sg_n:['синее','синего','синему','синее','синим','синем'],pl:['синие','синих','синим','синих','синими','синих'],note:'Adj. MOU -ий: terminaisons en -е/-и/-ю'},
+{ru:'зелёный',fr:'vert',wtype:'adj',adjcat:'couleur',diff:'reg',sg_m:['зелёный','зелёного','зелёному','зелёного','зелёным','зелёном'],sg_f:['зелёная','зелёной','зелёной','зелёную','зелёной','зелёной'],sg_n:['зелёное','зелёного','зелёному','зелёное','зелёным','зелёном'],pl:['зелёные','зелёных','зелёным','зелёных','зелёными','зелёных'],note:'Adj. dur avec ё'},
+{ru:'белый',fr:'blanc',wtype:'adj',adjcat:'couleur',diff:'reg',sg_m:['белый','белого','белому','белого','белым','белом'],sg_f:['белая','белой','белой','белую','белой','белой'],sg_n:['белое','белого','белому','белое','белым','белом'],pl:['белые','белых','белым','белых','белыми','белых'],note:'Adj. dur standard'},
+{ru:'чёрный',fr:'noir',wtype:'adj',adjcat:'couleur',diff:'reg',sg_m:['чёрный','чёрного','чёрному','чёрного','чёрным','чёрном'],sg_f:['чёрная','чёрной','чёрной','чёрную','чёрной','чёрной'],sg_n:['чёрное','чёрного','чёрному','чёрное','чёрным','чёрном'],pl:['чёрные','чёрных','чёрным','чёрных','чёрными','чёрных'],note:'Adj. dur avec ё'},
+{ru:'жёлтый',fr:'jaune',wtype:'adj',adjcat:'couleur',diff:'reg',sg_m:['жёлтый','жёлтого','жёлтому','жёлтого','жёлтым','жёлтом'],sg_f:['жёлтая','жёлтой','жёлтой','жёлтую','жёлтой','жёлтой'],sg_n:['жёлтое','жёлтого','жёлтому','жёлтое','жёлтым','жёлтом'],pl:['жёлтые','жёлтых','жёлтым','жёлтых','жёлтыми','жёлтых'],note:'Adj. dur -ый'},
+{ru:'большой',fr:'grand',wtype:'adj',adjcat:'taille',diff:'reg',sg_m:['большой','большого','большому','большого','большим','большом'],sg_f:['большая','большой','большой','большую','большой','большой'],sg_n:['большое','большого','большому','большое','большим','большом'],pl:['большие','больших','большим','больших','большими','больших'],note:'Adj. dur -ой'},
+{ru:'маленький',fr:'petit',wtype:'adj',adjcat:'taille',diff:'reg',sg_m:['маленький','маленького','маленькому','маленького','маленьким','маленьком'],sg_f:['маленькая','маленькой','маленькой','маленькую','маленькой','маленькой'],sg_n:['маленькое','маленького','маленькому','маленькое','маленьким','маленьком'],pl:['маленькие','маленьких','маленьким','маленьких','маленькими','маленьких'],note:'Adj. après к'},
+{ru:'высокий',fr:'grand / haut',wtype:'adj',adjcat:'taille',diff:'reg',sg_m:['высокий','высокого','высокому','высокого','высоким','высоком'],sg_f:['высокая','высокой','высокой','высокую','высокой','высокой'],sg_n:['высокое','высокого','высокому','высокое','высоким','высоком'],pl:['высокие','высоких','высоким','высоких','высокими','высоких'],note:'Adj. après к'},
+{ru:'длинный',fr:'long',wtype:'adj',adjcat:'taille',diff:'reg',sg_m:['длинный','длинного','длинному','длинного','длинным','длинном'],sg_f:['длинная','длинной','длинной','длинную','длинной','длинной'],sg_n:['длинное','длинного','длинному','длинное','длинным','длинном'],pl:['длинные','длинных','длинным','длинных','длинными','длинных'],note:'Adj. dur standard'},
+{ru:'хороший',fr:'bon',wtype:'adj',adjcat:'qualite',diff:'reg',sg_m:['хороший','хорошего','хорошему','хорошего','хорошим','хорошем'],sg_f:['хорошая','хорошей','хорошей','хорошую','хорошей','хорошей'],sg_n:['хорошее','хорошего','хорошему','хорошее','хорошим','хорошем'],pl:['хорошие','хороших','хорошим','хороших','хорошими','хороших'],note:'Après ш: terminaisons en -е/-и'},
+{ru:'плохой',fr:'mauvais',wtype:'adj',adjcat:'qualite',diff:'reg',sg_m:['плохой','плохого','плохому','плохого','плохим','плохом'],sg_f:['плохая','плохой','плохой','плохую','плохой','плохой'],sg_n:['плохое','плохого','плохому','плохое','плохим','плохом'],pl:['плохие','плохих','плохим','плохих','плохими','плохих'],note:'Après х: terminaisons en -и'},
+{ru:'новый',fr:'nouveau',wtype:'adj',adjcat:'qualite',diff:'reg',sg_m:['новый','нового','новому','нового','новым','новом'],sg_f:['новая','новой','новой','новую','новой','новой'],sg_n:['новое','нового','новому','новое','новым','новом'],pl:['новые','новых','новым','новых','новыми','новых'],note:'Adj. dur standard -ый'},
+{ru:'красивый',fr:'beau',wtype:'adj',adjcat:'qualite',diff:'reg',sg_m:['красивый','красивого','красивому','красивого','красивым','красивом'],sg_f:['красивая','красивой','красивой','красивую','красивой','красивой'],sg_n:['красивое','красивого','красивому','красивое','красивым','красивом'],pl:['красивые','красивых','красивым','красивых','красивыми','красивых'],note:'Adj. dur standard'},
+{ru:'интересный',fr:'intéressant',wtype:'adj',adjcat:'qualite',diff:'reg',sg_m:['интересный','интересного','интересному','интересного','интересным','интересном'],sg_f:['интересная','интересной','интересной','интересную','интересной','интересной'],sg_n:['интересное','интересного','интересному','интересное','интересным','интересном'],pl:['интересные','интересных','интересным','интересных','интересными','интересных'],note:'Adj. dur standard'},
+{ru:'мой',fr:'mon / ma',wtype:'adj',adjcat:'possessif',diff:'irreg',sg_m:['мой','моего','моему','моего','моим','моём'],sg_f:['моя','моей','моей','мою','моей','моей'],sg_n:['моё','моего','моему','моё','моим','моём'],pl:['мои','моих','моим','моих','моими','моих'],note:'⚠ Possessif irrégulier'},
+{ru:'твой',fr:'ton / ta',wtype:'adj',adjcat:'possessif',diff:'irreg',sg_m:['твой','твоего','твоему','твоего','твоим','твоём'],sg_f:['твоя','твоей','твоей','твою','твоей','твоей'],sg_n:['твоё','твоего','твоему','твоё','твоим','твоём'],pl:['твои','твоих','твоим','твоих','твоими','твоих'],note:'⚠ Même modèle que мой'},
+{ru:'наш',fr:'notre',wtype:'adj',adjcat:'possessif',diff:'irreg',sg_m:['наш','нашего','нашему','нашего','нашим','нашем'],sg_f:['наша','нашей','нашей','нашу','нашей','нашей'],sg_n:['наше','нашего','нашему','наше','нашим','нашем'],pl:['наши','наших','нашим','наших','нашими','наших'],note:'⚠ Possessif après ш'},
+{ru:'этот',fr:'ce / cet',wtype:'adj',adjcat:'possessif',diff:'irreg',sg_m:['этот','этого','этому','этого','этим','этом'],sg_f:['эта','этой','этой','эту','этой','этой'],sg_n:['это','этого','этому','это','этим','этом'],pl:['эти','этих','этим','этих','этими','этих'],note:'⚠ Démonstratif irrégulier: этот/эта/это/эти'},
+{ru:'весь',fr:'tout / toute',wtype:'adj',adjcat:'possessif',diff:'irreg',sg_m:['весь','всего','всему','весь','всем','всём'],sg_f:['вся','всей','всей','всю','всей','всей'],sg_n:['всё','всего','всему','всё','всем','всём'],pl:['все','всех','всем','всех','всеми','всех'],note:'⚠ Très irrégulier: весь/вся/всё/все'},
+];
+
+const PHRASES=[
+  {mot:'книга',nb:'sg',cas:1,phrase:'Это страница {X}.',expl:'De quoi? → Génitif sg'},
+  {mot:'стол',nb:'sg',cas:5,phrase:'Лампа стоит на {X}.',expl:'Sur quoi? → Prépositionnel sg'},
+  {mot:'друг',nb:'sg',cas:2,phrase:'Я звоню {X}.',expl:'À qui? → Datif sg'},
+  {mot:'город',nb:'sg',cas:5,phrase:'Я живу в {X}.',expl:'Dans quoi? → Prépositionnel sg'},
+  {mot:'женщина',nb:'sg',cas:2,phrase:'Я помогаю {X}.',expl:'À qui? → Datif sg'},
+  {mot:'время',nb:'sg',cas:1,phrase:'У меня нет {X}.',expl:'Pas de quoi? → Génitif sg'},
+  {mot:'стул',nb:'pl',cas:0,phrase:'В комнате стоят {X}.',expl:'Qui/quoi? → Nominatif pl'},
+  {mot:'город',nb:'pl',cas:1,phrase:'В России много {X}.',expl:'Beaucoup de quoi? → Génitif pl'},
+  {mot:'студент',nb:'pl',cas:1,phrase:'В группе пять {X}.',expl:'Cinq de quoi? → Génitif pl'},
+  {mot:'дом',nb:'pl',cas:5,phrase:'Мы говорим о {X}.',expl:'À propos de? → Prépositionnel pl'},
+];
+
+// ══════════════════════════════════════════════════════════════
+// SYSTÈME INTELLIGENT — MÉMOIRE
+// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+// SYSTÈME INTELLIGENT V6 — SRS + Chrono + Boost complétion
+// ══════════════════════════════════════════════════════════════
+let wordStats = {};
+let casStats = Array.from({length:6},()=>({right:0,wrong:0}));
+let errorList = [];
+let srsData = {};
+let smartMode = true;
+let chronoMode = false;
+let completionBoost = false;
+let chronoTimer = null;
+let chronoLeft = 15;
+let streakHistory = [];
+
+// ── PERSISTANCE localStorage ──────────────────────────
+const LS_KEY = 'russe_decl_v7';
+
+function saveState(){
+  try {
+    const data = {
+      wordStats,
+      casStats,
+      errorList,
+      srsData,
+      smartMode,
+      chronoMode,
+      completionBoost,
+      savedAt: Date.now()
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(data));
+  } catch(err){ console.warn('Sauvegarde impossible:', err); }
+}
+
+function loadState(){
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    if(data.wordStats)      wordStats      = data.wordStats;
+    if(data.casStats)       casStats       = data.casStats;
+    if(data.errorList)      errorList      = data.errorList;
+    if(data.srsData)        srsData        = data.srsData;
+    if(data.smartMode      !== undefined) smartMode      = data.smartMode;
+    if(data.chronoMode     !== undefined) chronoMode     = data.chronoMode;
+    if(data.completionBoost!== undefined) completionBoost= data.completionBoost;
+    console.log('État restauré ✓', data.savedAt ? new Date(data.savedAt).toLocaleString() : '');
+  } catch(err){ console.warn('Chargement état impossible:', err); }
+}
+
+function syncChips(){
+  // Synchronise l'UI des chips avec les variables chargées
+  const smartChip = document.getElementById('smartChip');
+  const chronoChip = document.getElementById('chronoChip');
+  const boostChip  = document.getElementById('completionBoostChip');
+  if(smartChip)  smartChip.classList.toggle('active', smartMode);
+  if(chronoChip) chronoChip.classList.toggle('active', chronoMode);
+  if(boostChip)  boostChip.classList.toggle('active', completionBoost);
+}
+
+
+function toggleSmartMode(el){ smartMode=!smartMode; el.classList.toggle('active',smartMode); saveState(); }
+function toggleChronoMode(el){ chronoMode=!chronoMode; el.classList.toggle('active',chronoMode); saveState(); }
+function toggleCompletionBoost(el){ completionBoost=!completionBoost; el.classList.toggle('active',completionBoost); saveState(); }
+
+// SRS — SM-2 simplifié
+function srsKey(item,ci,nb){ return `${item.ru}|${ci}|${nb}`; }
+function getSrsState(key){
+  const d=srsData[key];
+  if(!d) return 'new';
+  if(d.reps===0) return 'learning';
+  return Date.now()<d.due ? 'known' : 'due';
+}
+function updateSrs(key,ok){
+  if(!srsData[key]) srsData[key]={interval:1,ef:2.5,due:Date.now(),reps:0};
+  const d=srsData[key];
+  const q=ok?(d.reps===0?4:5):1;
+  if(q>=3){
+    if(d.reps===0) d.interval=1;
+    else if(d.reps===1) d.interval=6;
+    else d.interval=Math.round(d.interval*d.ef);
+    d.reps++;
+    d.ef=Math.max(1.3,d.ef+0.1-(5-q)*0.08);
+  } else { d.reps=0; d.interval=1; }
+  d.due=Date.now()+d.interval*86400000;
+}
+function getItemWeight(item){
+  if(!smartMode) return 3;
+  let w=0;
+  for(const nb of['sg','pl']) for(let ci=0;ci<6;ci++){
+    const s=getSrsState(srsKey(item,ci,nb));
+    w+=(s==='new'?4:s==='due'||s==='learning'?8:1);
+  }
+  return Math.max(1,w);
+}
+function weightedRand(pool){
+  const weights=pool.map(getItemWeight);
+  const total=weights.reduce((a,b)=>a+b,0);
+  let r=Math.random()*total;
+  for(let i=0;i<pool.length;i++){ r-=weights[i]; if(r<=0) return pool[i]; }
+  return pool[pool.length-1];
+}
+
+function recordResult(item,casIdx,nb,ok){
+  const key=item.ru;
+  if(!wordStats[key]) wordStats[key]={right:0,wrong:0};
+  if(ok){ wordStats[key].right++; casStats[casIdx].right++; }
+  else {
+    wordStats[key].wrong++; casStats[casIdx].wrong++;
+    const existing=errorList.findIndex(e=>e.ru===item.ru&&e.casIdx===casIdx);
+    if(existing>=0) errorList[existing].count++;
+    else errorList.push({ru:item.ru,fr:item.fr||item.ru,casIdx,count:1,item});
+  }
+  const key2=srsKey(item,casIdx,nb||'sg');
+  updateSrs(key2,ok);
+  updateErrorBadge();
+  saveState();
+}
+
+function updateErrorBadge(){
+  const badge=document.getElementById('errorCountBadge');
+  if(errorList.length>0){badge.style.display='inline-flex';badge.textContent=errorList.length;}
+  else badge.style.display='none';
+}
+
+// CHRONO
+function startChrono(totalSec){
+  stopChrono();
+  chronoLeft=totalSec;
+  document.getElementById('chronoWrap').classList.remove('hidden');
+  updateChronoDisplay(totalSec,totalSec);
+  chronoTimer=setInterval(()=>{
+    chronoLeft--;
+    updateChronoDisplay(chronoLeft,totalSec);
+    if(chronoLeft<=0){ stopChrono(); timeOut(); }
+  },1000);
+}
+function stopChrono(){ if(chronoTimer){clearInterval(chronoTimer);chronoTimer=null;} }
+function updateChronoDisplay(left,total){
+  const pct=left/total*100;
+  const color=pct>50?'var(--green)':pct>25?'var(--gold)':'var(--red)';
+  document.getElementById('chronoBar').style.width=pct+'%';
+  document.getElementById('chronoBar').style.background=color;
+  document.getElementById('chronoNum').textContent=left;
+  document.getElementById('chronoNum').style.color=color;
+}
+function timeOut(){
+  if(answered) return;
+  answered=true;
+  const q=session.questions[session.current];
+  // Mark as wrong
+  recordResult(q.adj||q.mot, q.casIdx, q.nb, false);
+  session.sessionCasStats[q.casIdx].wrong++;
+  session.wrong++; updateScore();
+  streakHistory.push(false); renderStreak();
+  // reveal correct answer in feedback
+  const zone=document.getElementById('feedbackZone');
+  zone.classList.remove('hidden');
+  zone.className='feedback wrong-fb';
+  zone.innerHTML=`<div class="feedback-title ko">⏱ TEMPS ÉCOULÉ !</div>
+    <div class="feedback-body">Bonne réponse : <strong>${getCorrectAnswer(q)}</strong></div>
+    ${buildTable(q)}`;
+  document.querySelectorAll('.option-btn,.checkbox-option').forEach(b=>b.disabled=true);
+  document.getElementById('nextBtn').classList.remove('hidden');
+}
+function getCorrectAnswer(q){
+  if(q.type==='adj_qcm'||q.type==='adj_completion') return q.correct;
+  if(q.type==='identification') return q.correctCas.map(i=>CAS[i]).join(' + ');
+  return q.correct||(q.mot[q.nb==='sg'?'sg':'pl']||[])[q.casIdx]||'';
+}
+
+// STREAK
+function renderStreak(){
+  const bar=document.getElementById('streakBar');
+  const last=streakHistory.slice(-10);
+  bar.innerHTML=last.map(ok=>`<div class="streak-dot ${ok?'ok':'ko'}"></div>`).join('');
+}
+
+// SRS BADGE
+function renderSrsBadge(item,casIdx,nb){
+  const el=document.getElementById('srsBadge');
+  if(!smartMode){el.classList.add('hidden');return;}
+  const key=srsKey(item,casIdx,nb);
+  const state=getSrsState(key);
+  const map={new:['srs-new','NOUVEAU'],learning:['srs-learning','APPRENTISSAGE'],due:['srs-hard','À REVOIR'],known:['srs-review','MAÎTRISÉ']};
+  const [cls,label]=map[state]||['srs-new','NOUVEAU'];
+  el.className=`srs-badge ${cls}`;
+  el.textContent=label;
+  el.classList.remove('hidden');
+}
+
+// ══════════════════════════════════════════════════════════════
+// ÉTAT & FILTRES
+// ══════════════════════════════════════════════════════════════
+let filters={
+  ex:['qcm','completion','identification','phrase'],
+  genre:['m','f','n'],
+  cat:['objet','personne','lieu','animal','nourriture','nature','temps','corps','maison','vetement','travail','voyage'],
+  diff:['reg','irreg','indecl'],
+  nombre:['sg','pl'],
+  wtype:['nom','adj'],
+  adjcat:['couleur','taille','qualite','possessif','nationalite','ordinal']
+};
+let session={questions:[],current:0,right:0,wrong:0,isReview:false,sessionCasStats:Array.from({length:6},()=>({right:0,wrong:0}))};
+let answered=false, selectedCB=[];
+
+function toggleFilter(el){
+  const f=el.dataset.filter,v=el.dataset.val;
+  const idx=filters[f].indexOf(v);
+  if(idx>=0){if(filters[f].length>1){filters[f].splice(idx,1);el.classList.remove('active');}}
+  else{filters[f].push(v);el.classList.add('active');}
+}
+function toggleSmartMode(el){
+  smartMode=!smartMode;
+  el.classList.toggle('active',smartMode);
+}
+
+// ══════════════════════════════════════════════════════════════
+// NAVIGATION & TABS
+// ══════════════════════════════════════════════════════════════
+function show(id){['homeScreen','exerciceScreen','resultScreen'].forEach(s=>document.getElementById(s).classList.add('hidden'));document.getElementById(id).classList.remove('hidden');}
+function goHome(){stopChrono();streakHistory=[];show('homeScreen');renderReviewTab();renderStatsTab();}
+
+function switchTab(tabId,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+  if(tabId==='tabReview') renderReviewTab();
+  if(tabId==='tabStats') renderStatsTab();
+}
+
+// ══════════════════════════════════════════════════════════════
+// SESSION
+// ══════════════════════════════════════════════════════════════
+function startSession(isReview){
+  let pool;
+  if(isReview){
+    if(errorList.length===0){alert('Aucune erreur à réviser !');return;}
+    pool=errorList.map(e=>e.item).filter(Boolean);
+  } else {
+    pool=NOMS.filter(m=>{
+      if(m.wtype==='nom') return filters.genre.includes(m.genre)&&filters.cat.includes(m.cat)&&filters.diff.includes(m.diff)&&filters.wtype.includes('nom');
+      if(m.wtype==='adj') return filters.adjcat.includes(m.adjcat)&&filters.diff.includes(m.diff)&&filters.wtype.includes('adj');
+      return false;
+    });
+  }
+  if(pool.length===0){alert('Aucun mot disponible avec ces filtres !');return;}
+  const n=parseInt(document.getElementById('numQ').value);
+  session={questions:buildQuestions(pool,n,isReview),current:0,right:0,wrong:0,isReview,
+    sessionCasStats:Array.from({length:6},()=>({right:0,wrong:0}))};
+  updateScore();show('exerciceScreen');renderQ();
+}
+
+// ══════════════════════════════════════════════════════════════
+// BUILD QUESTIONS
+// ══════════════════════════════════════════════════════════════
+function shuffle(a){return[...a].sort(()=>Math.random()-0.5);}
+function rand(a){return a[Math.floor(Math.random()*a.length)];}
+
+function buildQuestions(pool,n,isReview){
+  const qs=[];
+  for(let i=0;i<n;i++){
+    const item=(smartMode&&!isReview)?weightedRand(pool):rand(pool);
+    const nb=rand([...filters.nombre]);
+    const casIdx=Math.floor(Math.random()*6);
+    const srsState=getSrsState(srsKey(item,casIdx,nb));
+    const isHard=(srsState==='due'||srsState==='learning');
+
+    let type;
+    if(isReview){
+      // révision = complétion prioritaire
+      type=rand(['completion','completion','qcm']);
+    } else if(completionBoost){
+      // 60% complétion, 20% phrase, 10% qcm, 10% identification
+      const r=Math.random();
+      type=r<0.60?'completion':r<0.80?'phrase':r<0.90?'qcm':'identification';
+    } else {
+      type=rand([...filters.ex]);
+    }
+
+    let q;
+    if(item.wtype==='adj'){
+      if(type==='completion') q=buildAdjCompletion(item,casIdx,nb);
+      else q=buildAdjQCM(item,casIdx,nb);
+    } else if(type==='qcm') q=buildQCM(item,casIdx,nb);
+    else if(type==='completion') q=buildCompletion(item,casIdx,nb);
+    else if(type==='identification') q=buildIdent(item,nb);
+    else q=buildPhrase(pool)||buildCompletion(item,casIdx,nb);
+    q.isHard=isHard; q.srsState=srsState;
+    qs.push(q);
+  }
+  return qs;
+}
+
+function buildQCM(mot,casIdx,nb){
+  const forms=nb==='sg'?mot.sg:mot.pl;
+  const correct=forms[casIdx];
+  let wrong=forms.filter((c,i)=>i!==casIdx&&c!==correct);
+  let allForms=NOMS.filter(m=>m.wtype==='nom').flatMap(m=>nb==='sg'?m.sg:m.pl);
+  while(wrong.length<3){const w=rand(allForms);if(w!==correct&&!wrong.includes(w))wrong.push(w);}
+  return{type:'qcm',mot,casIdx,nb,correct,options:shuffle([correct,...wrong.slice(0,3)]),exType:nb==='sg'?'QCM · SINGULIER':'QCM · PLURIEL'};
+}
+function buildCompletion(mot,casIdx,nb){
+  const forms=nb==='sg'?mot.sg:mot.pl;
+  return{type:'completion',mot,casIdx,nb,correct:forms[casIdx],exType:nb==='sg'?'COMPLÉTION · SINGULIER':'COMPLÉTION · PLURIEL'};
+}
+function buildIdent(mot,nb){
+  const forms=nb==='sg'?mot.sg:mot.pl;
+  const form=rand(forms);
+  const correctCas=forms.map((c,i)=>c===form?i:-1).filter(i=>i>=0);
+  return{type:'identification',mot,nb,form,correctCas,exType:nb==='sg'?'IDENTIFICATION · SINGULIER':'IDENTIFICATION · PLURIEL'};
+}
+function buildPhrase(pool){
+  const pf=PHRASES.filter(p=>{const m=NOMS.find(x=>x.ru===p.mot);return m&&pool.includes(m)&&filters.nombre.includes(p.nb);});
+  if(pf.length===0)return null;
+  const p=rand(pf);const mot=NOMS.find(x=>x.ru===p.mot);
+  const forms=p.nb==='sg'?mot.sg:mot.pl;
+  return{type:'phrase',mot,casIdx:p.cas,nb:p.nb,phrase:p.phrase.replace('{X}','___'),forme:forms[p.cas],expl:p.expl,exType:'PHRASE EN CONTEXTE'};
+}
+function buildAdjQCM(adj,casIdx,nb){
+  const genres=filters.genre;const genre=rand(genres);
+  let forms,genreLabel;
+  if(nb==='pl'){forms=adj.pl;genreLabel='Pluriel';}
+  else if(genre==='m'){forms=adj.sg_m;genreLabel='Masculin sg';}
+  else if(genre==='f'){forms=adj.sg_f;genreLabel='Féminin sg';}
+  else{forms=adj.sg_n;genreLabel='Neutre sg';}
+  const correct=forms[casIdx];
+  let allForms=[...adj.sg_m,...adj.sg_f,...adj.sg_n,...adj.pl].filter(c=>c!==correct);
+  let wrong=shuffle(allForms).slice(0,3);
+  if(wrong.length<3){const extra=NOMS.filter(m=>m.wtype==='adj').flatMap(m=>[...m.sg_m,...m.sg_f,...m.sg_n,...m.pl]);while(wrong.length<3){const w=rand(extra);if(w!==correct&&!wrong.includes(w))wrong.push(w);}}
+  return{type:'adj_qcm',adj,casIdx,nb,genre,genreLabel,correct,options:shuffle([correct,...wrong.slice(0,3)]),exType:'ADJECTIF · '+genreLabel.toUpperCase()};
+}
+function buildAdjCompletion(adj,casIdx,nb){
+  const genres=filters.genre;const genre=rand(genres);
+  let forms,genreLabel;
+  if(nb==='pl'){forms=adj.pl;genreLabel='Pluriel';}
+  else if(genre==='m'){forms=adj.sg_m;genreLabel='Masculin sg';}
+  else if(genre==='f'){forms=adj.sg_f;genreLabel='Féminin sg';}
+  else{forms=adj.sg_n;genreLabel='Neutre sg';}
+  return{type:'adj_completion',adj,casIdx,nb,genre,genreLabel,correct:forms[casIdx],exType:'ADJECTIF · COMPLÉTION'};
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDU
+// ══════════════════════════════════════════════════════════════
+function renderQ(){
+  answered=false;selectedCB=[];
+  stopChrono();
+  const q=session.questions[session.current];
+  document.getElementById('progressFill').style.width=(session.current/session.questions.length*100)+'%';
+  const badge=document.getElementById('exTypeBadge');
+  badge.textContent=q.exType;
+  badge.className='ex-type'+((q.type==='adj_qcm'||q.type==='adj_completion')?' adj':session.isReview?' review':'');
+  const smart=document.getElementById('smartIndicator');
+  smart.classList.toggle('hidden',!q.isHard||session.isReview);
+  // SRS badge
+  if(q.mot) renderSrsBadge(q.mot,q.casIdx,q.nb||'sg');
+  else if(q.adj) renderSrsBadge(q.adj,q.casIdx,q.nb||'sg');
+  else document.getElementById('srsBadge').classList.add('hidden');
+  document.getElementById('feedbackZone').classList.add('hidden');
+  document.getElementById('nextBtn').classList.add('hidden');
+  document.getElementById('chronoWrap').classList.add('hidden');
+  renderStreak();
+  const card=document.getElementById('questionCard');
+  const az=document.getElementById('answersZone');
+
+  if(q.type==='adj_qcm'||q.type==='adj_completion'){
+    card.innerHTML=`<div class="word-meta"><span class="tag-adj">ADJECTIF</span> ${q.adj.adjcat}</div>
+      <div class="word-display adj-display">${q.adj.ru}</div>
+      <div class="word-translation">${q.adj.fr}</div>
+      <div class="question">Forme au <strong class="adj">${CAS[q.casIdx]}</strong> <span class="num-badge adj">${q.genreLabel}</span><br>
+      <span style="font-size:10px;color:var(--text-muted);font-family:monospace">${CAS_Q[q.casIdx]}</span></div>`;
+    az.innerHTML=`<div class="options">${q.options.map((o,i)=>`<button class="option-btn" onclick="answerQCM(this,'${o}','${q.correct}')"><span class="opt-letter">${String.fromCharCode(65+i)}</span>${o}</button>`).join('')}</div>`;
+    return;
+  }
+  if(q.type==='adj_completion'){
+    card.innerHTML=`<div class="word-meta"><span class="tag-adj">ADJECTIF</span> ${q.adj.adjcat}</div>
+      <div class="word-display adj-display">${q.adj.ru}</div>
+      <div class="word-translation">${q.adj.fr}</div>
+      <div class="question">Écris la forme au <strong class="adj">${CAS[q.casIdx]}</strong> <span class="num-badge adj">${q.genreLabel}</span><br>
+      <span style="font-size:10px;color:var(--text-muted);font-family:monospace">${CAS_Q[q.casIdx]}</span></div>`;
+    az.innerHTML=`<div class="input-zone"><input class="text-input" id="inp" type="text" placeholder="Écris en russe..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
+      <button class="btn-primary" id="checkBtn" onclick="answerAdjCompletion()">VÉRIFIER</button>`;
+    setTimeout(()=>{const e=document.getElementById('inp');if(e)e.focus();},100);
+    document.getElementById('inp').addEventListener('keydown',e=>{if(e.key==='Enter')answerAdjCompletion();});
+    return;
+  }
+  const mot=q.mot;
+  const diffTag=mot.diff==='irreg'?'<span class="tag-irreg">IRRÉG.</span>':mot.diff==='indecl'?'<span class="tag-indecl">INDÉCL.</span>':'';
+  const ws=wordStats[mot.ru];
+  const perfTag=ws&&ws.wrong>0?`<span style="font-family:monospace;font-size:9px;color:var(--red);margin-left:5px">✗${ws.wrong}</span>`:'';
+  const meta=`${genreStr(mot.genre)} · ${mot.cat}${mot.anim?' · animé':''}`;
+
+  if(q.type==='qcm'){
+    card.innerHTML=`<div class="word-meta">${meta}${diffTag}${perfTag}</div>
+      <div class="word-display">${mot.ru}</div><div class="word-translation">${mot.fr}</div>
+      <div class="question">Forme au <strong>${CAS[q.casIdx]}</strong> <span class="num-badge">${q.nb==='sg'?'SG':'PL'}</span><br>
+      <span style="font-size:10px;color:var(--text-muted);font-family:monospace">${CAS_Q[q.casIdx]}</span></div>`;
+    az.innerHTML=`<div class="options">${q.options.map((o,i)=>`<button class="option-btn" onclick="answerQCM(this,'${o}','${q.correct}')"><span class="opt-letter">${String.fromCharCode(65+i)}</span>${o}</button>`).join('')}</div>`;
+  } else if(q.type==='completion'){
+    card.innerHTML=`<div class="word-meta">${meta}${diffTag}${perfTag}</div>
+      <div class="word-display">${mot.ru}</div><div class="word-translation">${mot.fr}</div>
+      <div class="question">Écris la forme au <strong>${CAS[q.casIdx]}</strong> <span class="num-badge">${q.nb==='sg'?'SG':'PL'}</span><br>
+      <span style="font-size:10px;color:var(--text-muted);font-family:monospace">${CAS_Q[q.casIdx]}</span></div>`;
+    az.innerHTML=`<div class="input-zone"><input class="text-input" id="inp" type="text" placeholder="Écris en russe..." autocomplete="off" autocorrect="off" spellcheck="false"></div>
+      <button class="btn-primary" id="checkBtn" onclick="answerCompletion()">VÉRIFIER</button>`;
+    setTimeout(()=>{const e=document.getElementById('inp');if(e)e.focus();},100);
+    document.getElementById('inp').addEventListener('keydown',e=>{if(e.key==='Enter')answerCompletion();});
+  } else if(q.type==='identification'){
+    card.innerHTML=`<div class="word-meta">${meta}${diffTag}${perfTag}</div>
+      <div class="word-display">${q.form} <span class="num-badge">${q.nb==='sg'?'SG':'PL'}</span></div>
+      <div class="word-translation">${mot.ru} — ${mot.fr}</div>
+      <div class="question">Quel(s) cas ? <span style="color:var(--gold);font-size:11px">⚠ Plusieurs possibles</span></div>`;
+    az.innerHTML=`<div class="checkbox-options">${CAS.map((c,i)=>`<div class="checkbox-option" id="cb_${i}" onclick="toggleCB(${i})"><div class="checkbox-box" id="cbbox_${i}">✓</div><div><div>${c}</div><div style="font-size:10px;color:var(--text-muted)">${CAS_Q[i]}</div></div></div>`).join('')}</div>
+      <button class="btn-primary" id="checkBtn" onclick="answerIdent()">VÉRIFIER</button>`;
+  } else if(q.type==='phrase'){
+    card.innerHTML=`<div class="word-meta">${meta}${diffTag}${perfTag}</div>
+      <div class="word-display" style="font-size:19px;margin-bottom:9px">${q.phrase}</div>
+      <div class="word-translation">${mot.ru} = ${mot.fr}</div>
+      <div class="question" style="margin-top:9px">Le blanc = <strong>${mot.ru}</strong> <span class="num-badge">${q.nb==='sg'?'SG':'PL'}</span><br>Quel cas ?</div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:5px">${q.expl}</div>`;
+    az.innerHTML=`<div class="options">${CAS.map((c,i)=>`<button class="option-btn" style="font-size:12px" onclick="answerPhrase(this,${i},${q.casIdx})"><span class="opt-letter">${String.fromCharCode(65+i)}</span>${c}<span style="font-size:9px;color:var(--text-muted);margin-left:auto">${CAS_Q[i]}</span></button>`).join('')}</div>`;
+  }
+  // Start chrono after render (only for QCM/phrase, not completion/ident)
+  if(chronoMode && ['qcm','adj_qcm','phrase'].includes(q.type)){
+    const secs = q.isHard ? 12 : 15;
+    startChrono(secs);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// Helper: build feedback table
+// ══════════════════════════════════════════════════════════════
+function buildTable(q){
+  if(q.type==='adj_qcm'||q.type==='adj_completion'){
+    const adj=q.adj;
+    const rows=CAS.map((c,i)=>`<tr class="${q.casIdx===i?'hl-adj':''}"><td class="cas-name">${c}</td><td>${adj.sg_m[i]}</td><td>${adj.sg_f[i]}</td><td>${adj.sg_n[i]}</td><td>${adj.pl[i]}</td></tr>`).join('');
+    return`<table class="cas-table"><thead><tr><th>CAS</th><th>M.SG</th><th>F.SG</th><th>N.SG</th><th>PL</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+  const mot=q.mot;
+  const rows=CAS.map((c,i)=>{
+    const sgHL=q.nb==='sg'&&(q.casIdx===i||(q.type==='identification'&&q.correctCas&&q.correctCas.includes(i)));
+    const plHL=q.nb==='pl'&&(q.casIdx===i||(q.type==='identification'&&q.correctCas&&q.correctCas.includes(i)));
+    return`<tr class="${(sgHL||plHL)?'hl':''}"><td class="cas-name">${c}</td><td style="color:${sgHL?'var(--gold-light)':'var(--text)'}">${mot.sg[i]}</td><td style="color:${plHL?'var(--gold-light)':'var(--text)'}">${mot.pl[i]}</td></tr>`;
+  }).join('');
+  return`<table class="cas-table"><thead><tr><th>CAS</th><th>SINGULIER</th><th>PLURIEL</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// RÉPONSES
+// ══════════════════════════════════════════════════════════════
+function answerQCM(btn,chosen,correct){
+  if(answered)return;answered=true;stopChrono();
+  document.querySelectorAll('.option-btn').forEach(b=>{b.disabled=true;});
+  document.querySelectorAll('.option-btn').forEach(b=>{if(b.querySelector('.opt-letter')&&b.textContent.trim().slice(1).trim()===correct)b.classList.add('reveal');});
+  const ok=chosen===correct;
+  btn.classList.add(ok?'correct':'wrong');
+  const q=session.questions[session.current];
+  recordResult(q.adj||q.mot,q.casIdx,q.nb||'sg',ok);
+  session.sessionCasStats[q.casIdx][ok?'right':'wrong']++;
+  streakHistory.push(ok); renderStreak();
+  record(ok);showFeedback(ok,q);
+}
+
+// Normalisation ё↔е pour la comparaison des réponses
+function normalizeRu(s){ return s.toLowerCase().replace(/ё/g,'е'); }
+
+function answerCompletion(){
+  if(answered)return;
+  const inp=document.getElementById('inp');const val=inp.value.trim();
+  const q=session.questions[session.current];
+  answered=true;inp.disabled=true;stopChrono();
+  const ok=normalizeRu(val)===normalizeRu(q.correct);
+  inp.classList.add(ok?'correct':'wrong');
+  recordResult(q.mot,q.casIdx,q.nb||'sg',ok);
+  session.sessionCasStats[q.casIdx][ok?'right':'wrong']++;
+  streakHistory.push(ok); renderStreak();
+  record(ok);showFeedback(ok,q);
+  const btn=document.getElementById('checkBtn');if(btn)btn.disabled=true;
+}
+function answerAdjCompletion(){
+  if(answered)return;
+  const inp=document.getElementById('inp');const val=inp.value.trim();
+  const q=session.questions[session.current];
+  answered=true;inp.disabled=true;stopChrono();
+  const ok=normalizeRu(val)===normalizeRu(q.correct);
+  inp.classList.add(ok?'correct':'wrong');
+  recordResult(q.adj,q.casIdx,q.nb||'sg',ok);
+  session.sessionCasStats[q.casIdx][ok?'right':'wrong']++;
+  streakHistory.push(ok); renderStreak();
+  record(ok);showFeedback(ok,q);
+  const btn=document.getElementById('checkBtn');if(btn)btn.disabled=true;
+}
+function toggleCB(i){
+  if(answered)return;
+  const idx=selectedCB.indexOf(i);const el=document.getElementById('cb_'+i);
+  if(idx>=0){selectedCB.splice(idx,1);el.classList.remove('selected');}
+  else{selectedCB.push(i);el.classList.add('selected');}
+}
+function answerIdent(){
+  if(answered)return;answered=true;stopChrono();
+  const q=session.questions[session.current];
+  const correct=q.correctCas,selected=[...selectedCB];
+  const ok=correct.length===selected.length&&correct.every(c=>selected.includes(c));
+  document.querySelectorAll('.checkbox-option').forEach((el,i)=>{
+    el.style.cursor='default';
+    if(correct.includes(i)&&selected.includes(i))el.classList.add('correct');
+    else if(correct.includes(i)&&!selected.includes(i))el.classList.add('missed');
+    else if(!correct.includes(i)&&selected.includes(i))el.classList.add('wrong');
+  });
+  correct.forEach(ci=>{recordResult(q.mot,ci,q.nb||'sg',ok);session.sessionCasStats[ci][ok?'right':'wrong']++;});
+  streakHistory.push(ok); renderStreak();
+  record(ok);showFeedback(ok,q);
+  const btn=document.getElementById('checkBtn');if(btn)btn.disabled=true;
+}
+function answerPhrase(btn,chosen,correct){
+  if(answered)return;answered=true;stopChrono();
+  document.querySelectorAll('.option-btn').forEach((b,i)=>{b.disabled=true;if(i===correct)b.classList.add('reveal');});
+  const ok=chosen===correct;btn.classList.add(ok?'correct':'wrong');
+  const q=session.questions[session.current];
+  recordResult(q.mot,q.casIdx,q.nb||'sg',ok);
+  session.sessionCasStats[q.casIdx][ok?'right':'wrong']++;
+  streakHistory.push(ok); renderStreak();
+  record(ok);showFeedback(ok,q);
+}
+function record(ok){if(ok)session.right++;else session.wrong++;updateScore();}
+function updateScore(){document.getElementById('scoreRight').textContent=session.right;document.getElementById('scoreWrong').textContent=session.wrong;}
+
+function showFeedback(ok,q){
+  const zone=document.getElementById('feedbackZone');
+  zone.classList.remove('hidden');
+  zone.className=`feedback ${ok?'correct-fb':'wrong-fb'}`;
+  const item=q.adj||q.mot;
+  const note=(q.adj?q.adj.note:q.mot?q.mot.note:'')||'';
+  const ca=getCorrectAnswer(q);
+  zone.innerHTML=`<div class="feedback-title ${ok?'ok':'ko'}">${ok?'✓ CORRECT':'✗ INCORRECT'}</div>
+    ${!ok?`<div class="feedback-body">Bonne réponse : <strong>${ca}</strong></div>`:''}
+    <div class="feedback-body" style="color:var(--text-dim);font-size:11px;margin-bottom:7px">${note}</div>
+    ${buildTable(q)}`;
+  document.getElementById('nextBtn').classList.remove('hidden');
+}
+
+function nextQuestion(){
+  session.current++;
+  if(session.current>=session.questions.length){showResult();return;}
+  renderQ();
+}
+
+// ══════════════════════════════════════════════════════════════
+// RÉSULTAT
+// ══════════════════════════════════════════════════════════════
+function showResult(){
+  show('resultScreen');
+  const total=session.right+session.wrong;
+  const pct=Math.round(session.right/total*100);
+  document.getElementById('resultScore').textContent=pct+'%';
+  document.getElementById('statRight').textContent=session.right;
+  document.getElementById('statWrong').textContent=session.wrong;
+  // stats par cas de cette session
+  const casHtml=session.sessionCasStats.map((s,i)=>{
+    const t=s.right+s.wrong;if(t===0)return'';
+    const p=Math.round(s.right/t*100);
+    const color=p>=80?'var(--green)':p>=50?'var(--gold)':'var(--red)';
+    return`<div class="cas-stat-row"><span class="cas-stat-name">${CAS_SHORT[i]}</span>
+      <div class="cas-stat-bar-wrap"><div class="cas-stat-bar" style="width:${p}%;background:${color}"></div></div>
+      <span class="cas-stat-pct">${p}%</span></div>`;
+  }).join('');
+  document.getElementById('resultCasStats').innerHTML=casHtml?`<div style="font-family:monospace;font-size:9px;color:var(--text-muted);letter-spacing:2px;margin-bottom:10px">RÉSULTATS PAR CAS</div>${casHtml}`:'';
+  document.getElementById('resultMsg').textContent=pct>=90?'🏆 Excellent !':pct>=70?'👍 Bien !':pct>=50?'📚 Pas mal !':'💪 Continue !';
+  const btn=document.getElementById('replayErrorsBtn');
+  btn.style.display=errorList.length>0?'block':'none';
+}
+
+// ══════════════════════════════════════════════════════════════
+// ONGLET RÉVISION DES ERREURS
+// ══════════════════════════════════════════════════════════════
+function renderReviewTab(){
+  const div=document.getElementById('reviewContent');
+  if(errorList.length===0){
+    div.innerHTML=`<div class="empty-state">🎉 Aucune erreur pour l'instant !<br>Continue à t'entraîner.</div>`;
+    return;
+  }
+  const sorted=[...errorList].sort((a,b)=>b.count-a.count);
+  div.innerHTML=`<div style="font-family:monospace;font-size:9px;color:var(--text-muted);letter-spacing:2px;margin-bottom:12px">${errorList.length} MOT(S) À RETRAVAILLER</div>
+    <div class="error-list">${sorted.map(e=>`
+      <div class="error-item">
+        <div><div class="error-word">${e.ru}</div>
+        <div class="error-meta">${e.fr} · ${CAS[e.casIdx]}</div></div>
+        <div class="error-count">✗ ${e.count}</div>
+      </div>`).join('')}</div>
+    <button class="btn-primary" onclick="startSession(true)">🔁 RÉVISER CES ERREURS →</button>
+    <button class="btn-danger" onclick="clearErrors()">Effacer la liste</button>`;
+}
+
+function clearErrors(){
+  if(confirm('Effacer toute la liste des erreurs ?')){errorList=[];updateErrorBadge();saveState();renderReviewTab();}}
+
+// ══════════════════════════════════════════════════════════════
+// ONGLET STATISTIQUES
+// ══════════════════════════════════════════════════════════════
+function renderStatsTab(){
+  const div=document.getElementById('statsContent');
+  const totalRight=casStats.reduce((a,s)=>a+s.right,0);
+  const totalWrong=casStats.reduce((a,s)=>a+s.wrong,0);
+  const total=totalRight+totalWrong;
+  if(total===0){div.innerHTML=`<div class="empty-state">Aucune statistique encore.<br>Lance une session pour commencer !</div>`;return;}
+
+  // stats globales
+  const pctGlobal=Math.round(totalRight/total*100);
+  const globalColor=pctGlobal>=80?'var(--green)':pctGlobal>=50?'var(--gold)':'var(--red)';
+
+  // stats par cas
+  const casRows=CAS.map((c,i)=>{
+    const t=casStats[i].right+casStats[i].wrong;
+    if(t===0)return`<div class="cas-stat-row"><span class="cas-stat-name">${c}</span><div class="cas-stat-bar-wrap"><div class="cas-stat-bar" style="width:0%;background:var(--border)"></div></div><span class="cas-stat-pct" style="color:var(--text-muted)">—</span></div>`;
+    const p=Math.round(casStats[i].right/t*100);
+    const color=p>=80?'var(--green)':p>=50?'var(--gold)':'var(--red)';
+    return`<div class="cas-stat-row"><span class="cas-stat-name">${c}</span>
+      <div class="cas-stat-bar-wrap"><div class="cas-stat-bar" style="width:${p}%;background:${color}"></div></div>
+      <span class="cas-stat-pct" style="color:${color}">${p}%</span></div>`;
+  }).join('');
+
+  // mots les plus difficiles
+  const hardWords=Object.entries(wordStats)
+    .filter(([k,s])=>s.wrong>0)
+    .sort((a,b)=>(b[1].wrong/(b[1].right+b[1].wrong))-(a[1].wrong/(a[1].right+a[1].wrong)))
+    .slice(0,5);
+  const hardHtml=hardWords.length===0?'<div style="color:var(--text-muted);font-style:italic;font-size:13px">Aucun mot difficile !</div>':
+    hardWords.map(([ru,s])=>{
+      const item=NOMS.find(m=>m.ru===ru);
+      const pct=Math.round(s.right/(s.right+s.wrong)*100);
+      return`<div class="cas-stat-row"><span class="cas-stat-name">${ru}</span>
+        <div class="cas-stat-bar-wrap"><div class="cas-stat-bar" style="width:${pct}%;background:var(--red)"></div></div>
+        <span class="cas-stat-pct" style="color:var(--red)">${pct}%</span></div>`;
+    }).join('');
+
+  div.innerHTML=`
+    <div class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-num" style="color:${globalColor}">${pctGlobal}%</div><div class="stat-label">GLOBAL</div></div>
+        <div class="stat-box"><div class="stat-num">${total}</div><div class="stat-label">QUESTIONS</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--green)">${totalRight}</div><div class="stat-label">CORRECTES</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--red)">${totalWrong}</div><div class="stat-label">ERREURS</div></div>
+      </div>
+    </div>
+    <div class="stats-section">
+      <div class="stats-title">RÉSULTATS PAR CAS</div>
+      ${casRows}
+    </div>
+    <div class="stats-section">
+      <div class="stats-title">MOTS LES PLUS DIFFICILES</div>
+      ${hardHtml}
+    </div>
+    <button class="btn-danger" onclick="resetStats()">Réinitialiser les stats</button>`;
+}
+
+function resetStats(){
+  if(confirm('Réinitialiser toutes les statistiques ?')){
+    wordStats={};casStats=Array.from({length:6},()=>({right:0,wrong:0}));
+    saveState();
+    renderStatsTab();
+  }
+}
+// ══════════════════════════════════════════════════════════════
+// NOUVELLES DONNÉES V5
+// ══════════════════════════════════════════════════════════════
+
+// Nationalités et adjectifs géographiques
+const NATS = [
+{ru:'русский',fr:'russe',wtype:'adj',adjcat:'nationalite',diff:'reg',sg_m:['русский','русского','русскому','русского','русским','русском'],sg_f:['русская','русской','русской','русскую','русской','русской'],sg_n:['русское','русского','русскому','русское','русским','русском'],pl:['русские','русских','русским','русских','русскими','русских'],note:'Adj. après к: terminaisons en -и'},
+{ru:'французский',fr:'français',wtype:'adj',adjcat:'nationalite',diff:'reg',sg_m:['французский','французского','французскому','французского','французским','французском'],sg_f:['французская','французской','французской','французскую','французской','французской'],sg_n:['французское','французского','французскому','французское','французским','французском'],pl:['французские','французских','французским','французских','французскими','французских'],note:'Adj. après к: terminaisons en -и'},
+{ru:'английский',fr:'anglais',wtype:'adj',adjcat:'nationalite',diff:'reg',sg_m:['английский','английского','английскому','английского','английским','английском'],sg_f:['английская','английской','английской','английскую','английской','английской'],sg_n:['английское','английского','английскому','английское','английским','английском'],pl:['английские','английских','английским','английских','английскими','английских'],note:'Adj. après к: terminaisons en -и'},
+{ru:'немецкий',fr:'allemand',wtype:'adj',adjcat:'nationalite',diff:'reg',sg_m:['немецкий','немецкого','немецкому','немецкого','немецким','немецком'],sg_f:['немецкая','немецкой','немецкой','немецкую','немецкой','немецкой'],sg_n:['немецкое','немецкого','немецкому','немецкое','немецким','немецком'],pl:['немецкие','немецких','немецким','немецких','немецкими','немецких'],note:'Adj. après к'},
+{ru:'испанский',fr:'espagnol',wtype:'adj',adjcat:'nationalite',diff:'reg',sg_m:['испанский','испанского','испанскому','испанского','испанским','испанском'],sg_f:['испанская','испанской','испанской','испанскую','испанской','испанской'],sg_n:['испанское','испанского','испанскому','испанское','испанским','испанском'],pl:['испанские','испанских','испанским','испанских','испанскими','испанских'],note:'Adj. après к'},
+{ru:'итальянский',fr:'italien',wtype:'adj',adjcat:'nationalite',diff:'reg',sg_m:['итальянский','итальянского','итальянскому','итальянского','итальянским','итальянском'],sg_f:['итальянская','итальянской','итальянской','итальянскую','итальянской','итальянской'],sg_n:['итальянское','итальянского','итальянскому','итальянское','итальянским','итальянском'],pl:['итальянские','итальянских','итальянским','итальянских','итальянскими','итальянских'],note:'Adj. après к'},
+{ru:'китайский',fr:'chinois',wtype:'adj',adjcat:'nationalite',diff:'reg',sg_m:['китайский','китайского','китайскому','китайского','китайским','китайском'],sg_f:['китайская','китайской','китайской','китайскую','китайской','китайской'],sg_n:['китайское','китайского','китайскому','китайское','китайским','китайском'],pl:['китайские','китайских','китайским','китайских','китайскими','китайских'],note:'Adj. après к'},
+{ru:'японский',fr:'japonais',wtype:'adj',adjcat:'nationalite',diff:'reg',sg_m:['японский','японского','японскому','японского','японским','японском'],sg_f:['японская','японской','японской','японскую','японской','японской'],sg_n:['японское','японского','японскому','японское','японским','японском'],pl:['японские','японских','японским','японских','японскими','японских'],note:'Adj. après к'},
+{ru:'американский',fr:'américain',wtype:'adj',adjcat:'nationalite',diff:'reg',sg_m:['американский','американского','американскому','американского','американским','американском'],sg_f:['американская','американской','американской','американскую','американской','американской'],sg_n:['американское','американского','американскому','американское','американским','американском'],pl:['американские','американских','американским','американских','американскими','американских'],note:'Adj. après к'},
+{ru:'польский',fr:'polonais',wtype:'adj',adjcat:'nationalite',diff:'reg',sg_m:['польский','польского','польскому','польского','польским','польском'],sg_f:['польская','польской','польской','польскую','польской','польской'],sg_n:['польское','польского','польскому','польское','польским','польском'],pl:['польские','польских','польским','польских','польскими','польских'],note:'Adj. après к'},
+{ru:'украинский',fr:'ukrainien',wtype:'adj',adjcat:'nationalite',diff:'reg',sg_m:['украинский','украинского','украинскому','украинского','украинским','украинском'],sg_f:['украинская','украинской','украинской','украинскую','украинской','украинской'],sg_n:['украинское','украинского','украинскому','украинское','украинским','украинском'],pl:['украинские','украинских','украинским','украинских','украинскими','украинских'],note:'Adj. après к'},
+{ru:'арабский',fr:'arabe',wtype:'adj',adjcat:'nationalite',diff:'reg',sg_m:['арабский','арабского','арабскому','арабского','арабским','арабском'],sg_f:['арабская','арабской','арабской','арабскую','арабской','арабской'],sg_n:['арабское','арабского','арабскому','арабское','арабским','арабском'],pl:['арабские','арабских','арабским','арабских','арабскими','арабских'],note:'Adj. après к'},
+{ru:'московский',fr:'moscovite / de Moscou',wtype:'adj',adjcat:'nationalite',diff:'reg',sg_m:['московский','московского','московскому','московского','московским','московском'],sg_f:['московская','московской','московской','московскую','московской','московской'],sg_n:['московское','московского','московскому','московское','московским','московском'],pl:['московские','московских','московским','московских','московскими','московских'],note:'Adj. après к'},
+{ru:'европейский',fr:'européen',wtype:'adj',adjcat:'nationalite',diff:'reg',sg_m:['европейский','европейского','европейскому','европейского','европейским','европейском'],sg_f:['европейская','европейской','европейской','европейскую','европейской','европейской'],sg_n:['европейское','европейского','европейскому','европейское','европейским','европейском'],pl:['европейские','европейских','европейским','европейских','европейскими','европейских'],note:'Adj. en -йский'},
+{ru:'иностранный',fr:'étranger',wtype:'adj',adjcat:'nationalite',diff:'reg',sg_m:['иностранный','иностранного','иностранному','иностранного','иностранным','иностранном'],sg_f:['иностранная','иностранной','иностранной','иностранную','иностранной','иностранной'],sg_n:['иностранное','иностранного','иностранному','иностранное','иностранным','иностранном'],pl:['иностранные','иностранных','иностранным','иностранных','иностранными','иностранных'],note:'Adj. dur standard'},
+];
+
+// Ordinaux (premier, deuxième...) — déclinés comme adjectifs
+const ORDS = [
+{ru:'первый',fr:'premier / première',wtype:'adj',adjcat:'ordinal',diff:'reg',sg_m:['первый','первого','первому','первого','первым','первом'],sg_f:['первая','первой','первой','первую','первой','первой'],sg_n:['первое','первого','первому','первое','первым','первом'],pl:['первые','первых','первым','первых','первыми','первых'],note:'Ordinal. Se décline comme adjectif dur -ый'},
+{ru:'второй',fr:'deuxième',wtype:'adj',adjcat:'ordinal',diff:'reg',sg_m:['второй','второго','второму','второго','вторым','втором'],sg_f:['вторая','второй','второй','вторую','второй','второй'],sg_n:['второе','второго','второму','второе','вторым','втором'],pl:['вторые','вторых','вторым','вторых','вторыми','вторых'],note:'Ordinal. Adj. dur -ой'},
+{ru:'третий',fr:'troisième',wtype:'adj',adjcat:'ordinal',diff:'irreg',sg_m:['третий','третьего','третьему','третьего','третьим','третьем'],sg_f:['третья','третьей','третьей','третью','третьей','третьей'],sg_n:['третье','третьего','третьему','третье','третьим','третьем'],pl:['третьи','третьих','третьим','третьих','третьими','третьих'],note:'⚠ IRRÉGULIER: adj. mou avec ь (третий/третья/третье)'},
+{ru:'четвёртый',fr:'quatrième',wtype:'adj',adjcat:'ordinal',diff:'reg',sg_m:['четвёртый','четвёртого','четвёртому','четвёртого','четвёртым','четвёртом'],sg_f:['четвёртая','четвёртой','четвёртой','четвёртую','четвёртой','четвёртой'],sg_n:['четвёртое','четвёртого','четвёртому','четвёртое','четвёртым','четвёртом'],pl:['четвёртые','четвёртых','четвёртым','четвёртых','четвёртыми','четвёртых'],note:'Ordinal standard avec ё'},
+{ru:'пятый',fr:'cinquième',wtype:'adj',adjcat:'ordinal',diff:'reg',sg_m:['пятый','пятого','пятому','пятого','пятым','пятом'],sg_f:['пятая','пятой','пятой','пятую','пятой','пятой'],sg_n:['пятое','пятого','пятому','пятое','пятым','пятом'],pl:['пятые','пятых','пятым','пятых','пятыми','пятых'],note:'Ordinal standard'},
+{ru:'шестой',fr:'sixième',wtype:'adj',adjcat:'ordinal',diff:'reg',sg_m:['шестой','шестого','шестому','шестого','шестым','шестом'],sg_f:['шестая','шестой','шестой','шестую','шестой','шестой'],sg_n:['шестое','шестого','шестому','шестое','шестым','шестом'],pl:['шестые','шестых','шестым','шестых','шестыми','шестых'],note:'Ordinal -ой'},
+{ru:'седьмой',fr:'septième',wtype:'adj',adjcat:'ordinal',diff:'reg',sg_m:['седьмой','седьмого','седьмому','седьмого','седьмым','седьмом'],sg_f:['седьмая','седьмой','седьмой','седьмую','седьмой','седьмой'],sg_n:['седьмое','седьмого','седьмому','седьмое','седьмым','седьмом'],pl:['седьмые','седьмых','седьмым','седьмых','седьмыми','седьмых'],note:'Ordinal -ой avec ь'},
+{ru:'восьмой',fr:'huitième',wtype:'adj',adjcat:'ordinal',diff:'reg',sg_m:['восьмой','восьмого','восьмому','восьмого','восьмым','восьмом'],sg_f:['восьмая','восьмой','восьмой','восьмую','восьмой','восьмой'],sg_n:['восьмое','восьмого','восьмому','восьмое','восьмым','восьмом'],pl:['восьмые','восьмых','восьмым','восьмых','восьмыми','восьмых'],note:'Ordinal -ой avec ь'},
+{ru:'девятый',fr:'neuvième',wtype:'adj',adjcat:'ordinal',diff:'reg',sg_m:['девятый','девятого','девятому','девятого','девятым','девятом'],sg_f:['девятая','девятой','девятой','девятую','девятой','девятой'],sg_n:['девятое','девятого','девятому','девятое','девятым','девятом'],pl:['девятые','девятых','девятым','девятых','девятыми','девятых'],note:'Ordinal standard'},
+{ru:'десятый',fr:'dixième',wtype:'adj',adjcat:'ordinal',diff:'reg',sg_m:['десятый','десятого','десятому','десятого','десятым','десятом'],sg_f:['десятая','десятой','десятой','десятую','десятой','десятой'],sg_n:['десятое','десятого','десятому','десятое','десятым','десятом'],pl:['десятые','десятых','десятым','десятых','десятыми','десятых'],note:'Ordinal standard'},
+{ru:'последний',fr:'dernier',wtype:'adj',adjcat:'ordinal',diff:'reg',sg_m:['последний','последнего','последнему','последнего','последним','последнем'],sg_f:['последняя','последней','последней','последнюю','последней','последней'],sg_n:['последнее','последнего','последнему','последнее','последним','последнем'],pl:['последние','последних','последним','последних','последними','последних'],note:'Adj. MOU -ний: terminaisons molles partout'},
+{ru:'следующий',fr:'suivant / prochain',wtype:'adj',adjcat:'ordinal',diff:'reg',sg_m:['следующий','следующего','следующему','следующего','следующим','следующем'],sg_f:['следующая','следующей','следующей','следующую','следующей','следующей'],sg_n:['следующее','следующего','следующему','следующее','следующим','следующем'],pl:['следующие','следующих','следующим','следующих','следующими','следующих'],note:'Adj. mou -щий'},
+];
+
+// Ajouter nat + ordinaux au pool principal
+NOMS.push(...NATS, ...ORDS);
+
+// Nouvelles phrases en contexte
+const PHRASES_NEW = [
+  {mot:'город',nb:'sg',cas:1,phrase:'Он родился в центре {X}.',expl:'Du centre de quoi? → Génitif sg'},
+  {mot:'школа',nb:'sg',cas:5,phrase:'Дети учатся в {X}.',expl:'Dans quoi? → Prépositionnel sg'},
+  {mot:'друг',nb:'pl',cas:2,phrase:'Я купил подарки {X}.',expl:'Pour qui? → Datif pl'},
+  {mot:'книга',nb:'sg',cas:3,phrase:'Она читает {X} каждый день.',expl:'Quoi? → Accusatif sg'},
+  {mot:'мать',nb:'sg',cas:3,phrase:'Он любит {X} очень сильно.',expl:'Qui? (animé) → Accusatif sg'},
+  {mot:'врач',nb:'sg',cas:2,phrase:'Позвони {X} сегодня.',expl:'À qui? → Datif sg'},
+  {mot:'дом',nb:'sg',cas:0,phrase:'Мой {X} стоит на горе.',expl:'Quoi? → Nominatif sg'},
+  {mot:'ночь',nb:'sg',cas:3,phrase:'Мы работали всю {X}.',expl:'Toute quoi? → Accusatif sg'},
+  {mot:'язык',nb:'sg',cas:2,phrase:'Он учится {X} два года.',expl:'Quoi? → Datif sg'},
+  {mot:'слово',nb:'pl',cas:0,phrase:'Эти {X} очень трудные.',expl:'Quoi? → Nominatif pl'},
+  {mot:'время',nb:'sg',cas:3,phrase:'Мы провели {X} вместе.',expl:'Quoi? → Accusatif sg'},
+  {mot:'кошка',nb:'sg',cas:2,phrase:'Дай молоко {X}.',expl:'À qui? → Datif sg'},
+  {mot:'студент',nb:'pl',cas:2,phrase:'Профессор объяснил {X} правило.',expl:'À qui? → Datif pl'},
+  {mot:'письмо',nb:'sg',cas:3,phrase:'Я написал {X} другу.',expl:'Quoi? → Accusatif sg'},
+  {mot:'вечер',nb:'sg',cas:3,phrase:'Мы провели весь {X} дома.',expl:'Quoi? → Accusatif sg'},
+];
+
+// Fusionner avec phrases existantes
+PHRASES.push(...PHRASES_NEW);
+
+function genreStr(g){return g==='m'?'Masculin':g==='f'?'Féminin':'Neutre';}
+
+// ── INITIALISATION AU CHARGEMENT ──────────────────────
+document.addEventListener('DOMContentLoaded', function(){
+  loadState();
+  syncChips();
+  updateErrorBadge();
+  renderReviewTab();
+  renderStatsTab();
+  // Afficher indicateur si données restaurées
+  const totalQ = Object.values(casStats).reduce((a,s)=>a+s.right+s.wrong,0);
+  if(totalQ > 0){
+    showRestoreToast(totalQ);
+  }
+});
+
+function showRestoreToast(totalQ){
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    background:var(--card);border:1px solid var(--green);color:var(--green);
+    font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 16px;
+    border-radius:20px;z-index:999;letter-spacing:1px;
+    animation:fadeIn 0.3s ease;white-space:nowrap;
+  `;
+  toast.textContent = '✓ PROGRESSION RESTAURÉE · ' + totalQ + ' questions';
+  document.body.appendChild(toast);
+  setTimeout(()=>{ toast.style.opacity='0'; toast.style.transition='opacity 0.5s'; setTimeout(()=>toast.remove(),500); }, 3000);
+}
+
+
+// ── EXPORT / IMPORT ───────────────────────────────────
+function exportData(){
+  const data = localStorage.getItem(LS_KEY) || '{}';
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'russe-progression-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(){
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        localStorage.setItem(LS_KEY, JSON.stringify(data));
+        loadState();
+        syncChips();
+        updateErrorBadge();
+        renderReviewTab();
+        renderStatsTab();
+        const total = Object.values(casStats).reduce((a,s)=>a+s.right+s.wrong,0);
+        alert('✓ Données importées ! ' + total + ' questions restaurées.');
+      } catch(err){
+        alert('❌ Fichier invalide : ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+</script>
+</body>
+</html>

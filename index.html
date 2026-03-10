@@ -524,7 +524,7 @@ self.addEventListener('fetch',e=>{
     <div id="answersZone"></div>
     <div id="feedbackZone" class="hidden"></div>
     <button class="btn-primary hidden" id="nextBtn" onclick="nextQuestion()">SUIVANT →</button>
-    <button class="btn-secondary" onclick="goHome()">↩ Accueil</button>
+    <button class="btn-secondary hidden" id="homeBtn" onclick="goHome()">↩ Accueil</button>
   </div>
 
   <!-- ══ RÉSULTAT ══ -->
@@ -823,6 +823,7 @@ function timeOut(){
     ${buildTable(q)}`;
   document.querySelectorAll('.option-btn,.checkbox-option').forEach(b=>b.disabled=true);
   document.getElementById('nextBtn').classList.remove('hidden');
+  const hb=document.getElementById('homeBtn');if(hb)hb.classList.remove('hidden');
 }
 function getCorrectAnswer(q){
   if(q.type==='adj_qcm'||q.type==='adj_completion') return q.correct;
@@ -1030,6 +1031,7 @@ function renderQ(){
   document.getElementById('feedbackZone').classList.add('hidden');
   document.getElementById('nextBtn').classList.add('hidden');
   document.getElementById('chronoWrap').classList.add('hidden');
+  const hbr=document.getElementById('homeBtn');if(hbr)hbr.classList.add('hidden');
   renderStreak();
   const card=document.getElementById('questionCard');
   const az=document.getElementById('answersZone');

@@ -795,7 +795,7 @@ function startChrono(totalSec){
     if(chronoLeft<=0){ stopChrono(); timeOut(); }
   },1000);
 }
-function stopChrono(){ if(chronoTimer){clearInterval(chronoTimer);chronoTimer=null;} chronoLeft=0; document.getElementById('chronoWrap').classList.add('hidden'); }
+function stopChrono(){ if(chronoTimer){clearInterval(chronoTimer);chronoTimer=null;chronoLeft=0;} }
 function updateChronoDisplay(left,total){
   const pct=left/total*100;
   const color=pct>50?'var(--green)':pct>25?'var(--gold)':'var(--red)';
@@ -807,6 +807,7 @@ function updateChronoDisplay(left,total){
 function timeOut(){
   if(answered) return;
   answered=true;
+  document.getElementById('chronoWrap').classList.add('hidden');
   const q=session.questions[session.current];
   // Mark as wrong
   recordResult(q.adj||q.mot, q.casIdx, q.nb, false);

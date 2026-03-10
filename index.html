@@ -932,12 +932,14 @@ function buildQuestions(pool,n,isReview){
 
     let q;
     if(item.wtype==='adj'){
-      if(type==='completion') q=buildAdjCompletion(item,casIdx,nb);
+      // Pour les adjectifs: uniquement adj_qcm ou adj_completion
+      const adjType = (type==='completion' || completionBoost && Math.random()<0.5) ? 'completion' : 'qcm';
+      if(adjType==='completion') q=buildAdjCompletion(item,casIdx,nb);
       else q=buildAdjQCM(item,casIdx,nb);
     } else if(type==='qcm') q=buildQCM(item,casIdx,nb);
     else if(type==='completion') q=buildCompletion(item,casIdx,nb);
     else if(type==='identification') q=buildIdent(item,nb);
-    else q=buildPhrase(pool)||buildCompletion(item,casIdx,nb);
+    else q=buildPhrase(pool.filter(m=>m.wtype==='nom'))||buildCompletion(item,casIdx,nb);
     q.isHard=isHard; q.srsState=srsState;
     qs.push(q);
   }
@@ -963,7 +965,8 @@ function buildIdent(mot,nb){
   return{type:'identification',mot,nb,form,correctCas,exType:nb==='sg'?'IDENTIFICATION · SINGULIER':'IDENTIFICATION · PLURIEL'};
 }
 function buildPhrase(pool){
-  const pf=PHRASES.filter(p=>{const m=NOMS.find(x=>x.ru===p.mot);return m&&pool.includes(m)&&filters.nombre.includes(p.nb);});
+  const nomPool=pool.filter(m=>m.wtype==='nom');
+  const pf=PHRASES.filter(p=>{const m=NOMS.find(x=>x.ru===p.mot);return m&&nomPool.includes(m)&&filters.nombre.includes(p.nb);});
   if(pf.length===0)return null;
   const p=rand(pf);const mot=NOMS.find(x=>x.ru===p.mot);
   const forms=p.nb==='sg'?mot.sg:mot.pl;
@@ -997,6 +1000,11 @@ function buildAdjCompletion(adj,casIdx,nb){
 // ══════════════════════════════════════════════════════════════
 function renderQ(){
   answered=false;selectedCB=[];
+  // Reset complet de la zone de réponse
+  const azReset=document.getElementById('answersZone');
+  if(azReset)azReset.innerHTML='';
+  const cardReset=document.getElementById('questionCard');
+  if(cardReset)cardReset.innerHTML='';
   stopChrono();
   const q=session.questions[session.current];
   document.getElementById('progressFill').style.width=(session.current/session.questions.length*100)+'%';
@@ -1016,7 +1024,7 @@ function renderQ(){
   const card=document.getElementById('questionCard');
   const az=document.getElementById('answersZone');
 
-  if(q.type==='adj_qcm'||q.type==='adj_completion'){
+  if(q.type==='adj_qcm'){
     card.innerHTML=`<div class="word-meta"><span class="tag-adj">ADJECTIF</span> ${q.adj.adjcat}</div>
       <div class="word-display adj-display">${q.adj.ru}</div>
       <div class="word-translation">${q.adj.fr}</div>
@@ -1124,7 +1132,7 @@ function answerCompletion(){
   answered=true;inp.disabled=true;stopChrono();
   const ok=normalizeRu(val)===normalizeRu(q.correct);
   inp.classList.add(ok?'correct':'wrong');
-  recordResult(q.mot,q.casIdx,q.nb||'sg',ok);
+  recordResult(q.mot||q.adj,q.casIdx,q.nb||'sg',ok);
   session.sessionCasStats[q.casIdx][ok?'right':'wrong']++;
   streakHistory.push(ok); renderStreak();
   record(ok);showFeedback(ok,q);
@@ -1185,14 +1193,21 @@ function showFeedback(ok,q){
   const item=q.adj||q.mot;
   const note=(q.adj?q.adj.note:q.mot?q.mot.note:'')||'';
   const ca=getCorrectAnswer(q);
-  zone.innerHTML=`<div class="feedback-title ${ok?'ok':'ko'}">${ok?'✓ CORRECT':'✗ INCORRECT'}</div>
+  try {
+    zone.innerHTML=`<div class="feedback-title ${ok?'ok':'ko'}">${ok?'✓ CORRECT':'✗ INCORRECT'}</div>
     ${!ok?`<div class="feedback-body">Bonne réponse : <strong>${ca}</strong></div>`:''}
     <div class="feedback-body" style="color:var(--text-dim);font-size:11px;margin-bottom:7px">${note}</div>
     ${buildTable(q)}`;
+  } catch(err){
+    zone.innerHTML=`<div class="feedback-title ${ok?'ok':'ko'}">${ok?'✓ CORRECT':'✗ INCORRECT'}</div>
+    ${!ok?`<div class="feedback-body">Bonne réponse : <strong>${ca}</strong></div>`:''}`;
+    console.error('buildTable error:', err);
+  }
   document.getElementById('nextBtn').classList.remove('hidden');
 }
 
 function nextQuestion(){
+  answered=false;selectedCB=[];
   session.current++;
   if(session.current>=session.questions.length){showResult();return;}
   renderQ();

@@ -795,7 +795,7 @@ function startChrono(totalSec){
     if(chronoLeft<=0){ stopChrono(); timeOut(); }
   },1000);
 }
-function stopChrono(){ if(chronoTimer){clearInterval(chronoTimer);chronoTimer=null;} }
+function stopChrono(){ if(chronoTimer){clearInterval(chronoTimer);chronoTimer=null;} chronoLeft=0; document.getElementById('chronoWrap').classList.add('hidden'); }
 function updateChronoDisplay(left,total){
   const pct=left/total*100;
   const color=pct>50?'var(--green)':pct>25?'var(--gold)':'var(--red)';

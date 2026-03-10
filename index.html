@@ -179,32 +179,41 @@
 </style>
 
 <script>
-// ── SERVICE WORKER (PWA offline) ──────────────────────
+// ── SERVICE WORKER (PWA offline, network-first) ───────
 if('serviceWorker' in navigator){
+  const CACHE_VERSION = 'russe-v7.1';
   const swCode = `
-const CACHE='russe-v7';
-const ASSETS=[self.location.href||'/'];
+const CACHE='${CACHE_VERSION}';
 self.addEventListener('install',e=>{
-  e.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
+  self.skipWaiting();
 });
 self.addEventListener('activate',e=>{
-  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+  e.waitUntil(
+    caches.keys().then(keys=>Promise.all(
+      keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))
+    )).then(()=>self.clients.claim())
+  );
 });
 self.addEventListener('fetch',e=>{
-  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
-    if(res&&res.status===200&&res.type==='basic'){
-      const clone=res.clone();
-      caches.open(CACHE).then(cache=>cache.put(e.request,clone));
-    }
-    return res;
-  })));
+  // Network-first: essaie le réseau, cache en fallback
+  e.respondWith(
+    fetch(e.request).then(res=>{
+      if(res&&res.status===200){
+        const clone=res.clone();
+        caches.open(CACHE).then(cache=>cache.put(e.request,clone));
+      }
+      return res;
+    }).catch(()=>caches.match(e.request))
+  );
 });
-`;
+`.replace('${CACHE_VERSION}', CACHE_VERSION);
   const blob=new Blob([swCode],{type:'application/javascript'});
   const url=URL.createObjectURL(blob);
-  navigator.serviceWorker.register(url).then(()=>{
-    console.log('SW enregistré ✓');
-  }).catch(err=>console.warn('SW non supporté:',err));
+  navigator.serviceWorker.register(url).then(reg=>{
+    // Force update check à chaque chargement
+    reg.update();
+    console.log('SW enregistré ✓', CACHE_VERSION);
+  }).catch(err=>console.warn('SW:',err));
 }
 </script>
 </head>
@@ -1031,6 +1040,7 @@ function renderQ(){
       <div class="question">Forme au <strong class="adj">${CAS[q.casIdx]}</strong> <span class="num-badge adj">${q.genreLabel}</span><br>
       <span style="font-size:10px;color:var(--text-muted);font-family:monospace">${CAS_Q[q.casIdx]}</span></div>`;
     az.innerHTML=`<div class="options">${q.options.map((o,i)=>`<button class="option-btn" onclick="answerQCM(this,'${o}','${q.correct}')"><span class="opt-letter">${String.fromCharCode(65+i)}</span>${o}</button>`).join('')}</div>`;
+    if(chronoMode){const secs=q.isHard?12:15;startChrono(secs);}
     return;
   }
   if(q.type==='adj_completion'){
@@ -1043,6 +1053,7 @@ function renderQ(){
       <button class="btn-primary" id="checkBtn" onclick="answerAdjCompletion()">VÉRIFIER</button>`;
     setTimeout(()=>{const e=document.getElementById('inp');if(e)e.focus();},100);
     document.getElementById('inp').addEventListener('keydown',e=>{if(e.key==='Enter')answerAdjCompletion();});
+    // pas de chrono pour complétion (l'utilisateur a besoin de taper)
     return;
   }
   const mot=q.mot;
